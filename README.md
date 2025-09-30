@@ -1,6 +1,6 @@
 # TRIDENT-Match-Portal
 
-This repository contains a starter template for a full-stack app using Node.js + Express, PostgreSQL, and React (Vite).
+This repository contains a full-stack app using Node.js + Express, PostgreSQL, and React (Vite).
 
 Quick start
 
@@ -29,37 +29,16 @@ npm run dev
 
 The frontend proxies API calls from `/api` to `http://localhost:4000` by default. Backend listens on port 4000.
 
-Files added
 
-- `backend/` - Express backend scaffold with basic DB client and migration script.
-- `frontend/` - React (Vite) frontend scaffold.
-- `docker-compose.yml` - Postgres service for local development.
-
-
-Next steps: implement the Match Portal web app
+Next steps to implement the Match Portal web app
 ---------------------------------------------
 
-Below are recommended next steps and a compact roadmap to implement a web application that connects nonprofit organizations with researchers to collaborate on social projects. Use this as an actionable checklist and cross-check with the `backend/` and `frontend/` READMEs for more details.
+Below is a compact roadmap to implement a web application that connects nonprofit organizations with researchers to collaborate on social projects. 
 
-Contract (tiny):
-- Inputs: nonprofit and researcher profiles, project proposals, project applications, messaging between matched participants.
-- Outputs: list of projects, matches, application status, activity logs, basic analytics.
-- Error modes: validation errors, auth/permission errors, database conflicts, long-poll/timeouts for notifications.
+/*Here should go the database information: schema, DDL.*/
+DATABASE INFO...
 
-Core concepts and data models (suggested):
-- users: {id, name, email, password_hash, role: ['researcher','nonprofit','admin'], profile: JSON}
-- organizations: {id, name, contact_email, description, website, address}
-- researchers: {id, user_id, affiliations, expertise_tags, bio}
-- projects: {id, org_id, title, description, skills_required, status: ['draft','open','closed'], created_at}
-- applications: {id, project_id, researcher_id, message, status: ['pending','accepted','rejected']}
-- matches: {id, project_id, researcher_id, status, started_at, ended_at}
-- messages: {id, from_user, to_user, body, created_at}
-
-Sample DB schema (high level):
-CREATE TABLE users (id serial primary key, name text, email text unique, password_hash text, role text, profile jsonb, created_at timestamptz default now());
-CREATE TABLE organizations (id serial primary key, name text, contact_email text, description text, website text, created_at timestamptz default now());
-CREATE TABLE projects (id serial primary key, org_id int references organizations(id), title text, description text, skills text[], status text default 'draft', created_at timestamptz default now());
-
+/* the following needs to be reviewed */
 Backend API surface (initial):
 - Auth: POST /api/auth/register, POST /api/auth/login, POST /api/auth/refresh, POST /api/auth/logout
 - Users: GET /api/users/:id, PATCH /api/users/:id
