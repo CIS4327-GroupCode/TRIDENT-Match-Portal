@@ -1,3 +1,8 @@
-body { font-family: Arial, sans-serif; margin: 0; padding: 1rem; background: #f7f9fc }
-.container { max-width: 800px; margin: 0 auto; background: white; padding: 1.25rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06) }
-h1 { margin-top: 0 }
+/* Minimal custom styles alongside Bootstrap */
+
+body { background: #f7f9fc; }
+.video-placeholder{width:260px;height:150px;background:#f3f4f6;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#6b7280}
+.modal-backdrop-custom{position:fixed;inset:0;background:rgba(0,0,0,0.45)}
+
+
+
