@@ -1,7 +1,15 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/trident_dev'
+  connectionString: process.env.DATABASE_URL 
+});
+
+pool.connect()
+.then(() => {
+  console.log('Database connection established.');
+})
+.catch(err => {
+  console.error('Database connection error:', err.stack);
 });
 
 module.exports = {
