@@ -38,13 +38,15 @@ export default function TopBar() {
           ) : (
             <button type="button" className="btn btn-link text-muted me-2" onClick={() => { setMode('login'); setOpen(true) }}>Sign In</button>
           )}
-          <div className="dropdown">
+
+          <div className="dropdown" id='signup-dropdown'>
             <button className="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Sign Up</button>
             <ul className="dropdown-menu dropdown-menu-end">
                 <li><button className="dropdown-item" onClick={() => { setRole('nonprofit'); setMode('signup'); setOpen(true) }}>Nonprofit</button></li>
                 <li><button className="dropdown-item" onClick={() => { setRole('researcher'); setMode('signup'); setOpen(true) }}>Researcher</button></li>
               </ul>
           </div>
+          
         </div>
       </div>
 
