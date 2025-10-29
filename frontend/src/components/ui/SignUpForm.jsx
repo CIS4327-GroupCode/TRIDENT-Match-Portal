@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { useAuth } from '../../auth/AuthContext'
+import React, { useState, useContext } from 'react'
+import { AuthContext } from '../../auth/AuthContext'
 
 export default function SignUpForm({ role = 'nonprofit', onClose = () => {} }){
-  const auth = useAuth()
+  const { loginAndRedirect } = useContext(AuthContext)
   const [formRole, setFormRole] = useState(role)
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
@@ -40,27 +40,16 @@ export default function SignUpForm({ role = 'nonprofit', onClose = () => {} }){
         body: JSON.stringify(payload)
       })
 
-      if(!res.ok){
-        const data = await res.json().catch(()=> null)
+      const data = await res.json()
+      if (res.ok) {
+        loginAndRedirect({user:data.user, token:data.token});
+        setSuccess('Account created successfully! Redirecting...')
+        setTimeout(() => onClose(), 900)
+      } else {
         const msg = data && data.error ? data.error : `Registration failed (${res.status})`
         setError(msg)
-        setLoading(false)
-        return
       }
-
-      const data = await res.json().catch(()=> null)
-      setSuccess('Account created successfully.')
-      // automatically log in if backend returned token and user
-      try{
-        if(data && data.token && data.user && auth && typeof auth.login === 'function'){
-          auth.login(data)
-        }
-      }catch(e){ /* ignore */ }
       setLoading(false)
-      // Optionally close modal after a short delay so user sees confirmation
-      setTimeout(() => onClose(), 900)
-  // redirect to dashboard or home after account creation
-  window.location.href = '/'
     }catch(err){
       console.error(err)
       setError('Network error while registering. Please try again.')
