@@ -3,6 +3,7 @@ import { useAuth } from '../auth/AuthContext'
 import Modal from './ui/Modal'
 import SignUpForm from './ui/SignUpForm'
 import LoginForm from './ui/LoginForm'
+import { Link } from 'react-router-dom'
 
 function UtilityNav(){
   return (
@@ -12,6 +13,7 @@ function UtilityNav(){
       <a href="#pricing" className="nav-link">Pricing</a>
       <a href="#faq" className="nav-link">FAQ</a>
       <a href="#contact" className="nav-link">Contact</a>
+<Link to="/MessagesPage" className="nav-link">Messages</Link>
     </nav>
   )
 }
@@ -33,10 +35,13 @@ export default function TopBar() {
           {auth && auth.isAuthenticated ? (
             <>
               <span className="me-2 text-muted">Hi, {auth.user?.name || auth.user?.email}</span>
+
               <button className="btn btn-outline-secondary btn-sm" onClick={() => auth.logout()}>Logout</button>
             </>
           ) : (
-            <button type="button" className="btn btn-link text-muted me-2" onClick={() => { setMode('login'); setOpen(true) }}>Sign In</button>
+            <button type="button" className="btn btn-link text-muted me-2" onClick={() => { setMode('login'); setOpen(true) }}>
+              Sign In
+            </button>
           )}
           <div className="dropdown">
             <button className="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Sign Up</button>
