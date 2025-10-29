@@ -1,10 +1,14 @@
-const { Pool } = require('pg');
+import pkg from "pg";
+import dotenv from "dotenv";
+
+dotenv.config(); // <-- This loads your .env before connecting
+
+const { Pool } = pkg;
+
+console.log("Using DATABASE_URL:", process.env.DATABASE_URL);
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/trident_dev'
+  connectionString: process.env.DATABASE_URL,
 });
 
-module.exports = {
-  query: (text, params) => pool.query(text, params),
-  pool
-};
+export default pool;
