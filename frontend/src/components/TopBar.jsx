@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Modal from './ui/Modal'
+import { useNavigate } from 'react-router-dom'
 import SignUpForm from './ui/SignUpForm'
 
 function UtilityNav(){
@@ -17,6 +18,7 @@ function UtilityNav(){
 export default function TopBar() {
   const [open, setOpen] = useState(false)
   const [role, setRole] = useState('nonprofit')
+  const navigate = useNavigate()
 
   return (
     <header className="bg-white shadow-sm">
@@ -30,7 +32,8 @@ export default function TopBar() {
           <div className="dropdown">
             <button className="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Sign Up</button>
             <ul className="dropdown-menu dropdown-menu-end">
-              <li><button className="dropdown-item" onClick={() => { setRole('nonprofit'); setOpen(true) }}>Nonprofit</button></li>
+            <li><button className="dropdown-item" onClick={() => { navigate('/signup/nonprofit') }}> Nonprofit </button></li>
+
               <li><button className="dropdown-item" onClick={() => { setRole('researcher'); setOpen(true) }}>Researcher</button></li>
             </ul>
           </div>
