@@ -1,27 +1,44 @@
-const db = require("../db");
+const { User } = require("../database/models");
 
-//REGISTER ROUTE
+// REGISTER ROUTE
 const findUserByEmail = async (email) => {  
-    const exists = await db.query("SELECT id FROM _user WHERE email = $1", [email]);
-    if(exists.rows.length) return true;
-    return false;
-}
-const createUser = async (name, email, password_hash, role, mfa_enabled) => {
-   const resp = await db.query(
-      `INSERT INTO _user (name, email, password_hash, role, mfa_enabled) VALUES ($1,$2,$3,$4,$5) RETURNING id, name, email, role, created_at`,
-      [name, email, password_hash, role || "researcher", !!mfa_enabled]
-    );
-    return resp.rows[0];
+    const exists = await User.findOne({ 
+      where: { email },
+      attributes: ['id']
+    });
+    return !!exists;
 }
 
-//LOGIN ROUTE
+const createUser = async (name, email, password_hash, role, mfa_enabled) => {
+    const user = await User.create({
+      name,
+      email,
+      password_hash,
+      role: role || 'researcher',
+      mfa_enabled: !!mfa_enabled
+    });
+
+    // Return plain object matching old format
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at
+    };
+}
+
+// LOGIN ROUTE
 const getUserByEmail = async (email) => {
-     const found = await db.query(
-          "SELECT id, name, email, role, created_at, password_hash FROM _user WHERE email = $1",
-          [email]
-        );
-        if(!found.rows.length) return null;
-        return found.rows[0];
+    const user = await User.findOne({ 
+      where: { email },
+      attributes: ['id', 'name', 'email', 'role', 'created_at', 'password_hash']
+    });
+    
+    if (!user) return null;
+    
+    // Return plain object matching old format
+    return user.toJSON();
 }
 
 module.exports = {
