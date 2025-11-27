@@ -42,11 +42,6 @@ Organization.init(
     contacts: {
       type: DataTypes.STRING(255),
       allowNull: true
-    },
-    id_str: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-      field: 'id'
     }
   },
   {

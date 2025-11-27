@@ -1,0 +1,440 @@
+const { Project, Organization } = require('../database/models');
+const { Op } = require('sequelize');
+
+/**
+ * Browse and search public projects (for researchers)
+ * GET /projects/browse
+ */
+const browseProjects = async (req, res) => {
+  try {
+    const {
+      search,
+      methods,
+      budget_min,
+      budget_max,
+      data_sensitivity,
+      timeline,
+      page = 1,
+      limit = 20
+    } = req.query;
+
+    // Build where clause
+    const whereClause = {
+      status: 'open' // Only show open projects
+    };
+
+    // Search in title, problem, outcomes, methods_required
+    if (search) {
+      whereClause[Op.or] = [
+        { title: { [Op.iLike]: `%${search}%` } },
+        { problem: { [Op.iLike]: `%${search}%` } },
+        { outcomes: { [Op.iLike]: `%${search}%` } },
+        { methods_required: { [Op.iLike]: `%${search}%` } }
+      ];
+    }
+
+    // Filter by methods (case-insensitive partial match)
+    if (methods) {
+      whereClause.methods_required = { [Op.iLike]: `%${methods}%` };
+    }
+
+    // Filter by budget range
+    if (budget_min) {
+      whereClause.budget_min = { [Op.gte]: parseFloat(budget_min) };
+    }
+    if (budget_max) {
+      whereClause.budget_min = { [Op.lte]: parseFloat(budget_max) };
+    }
+
+    // Filter by data sensitivity
+    if (data_sensitivity) {
+      whereClause.data_sensitivity = data_sensitivity;
+    }
+
+    // Filter by timeline (partial match)
+    if (timeline) {
+      whereClause.timeline = { [Op.iLike]: `%${timeline}%` };
+    }
+
+    // Pagination
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    // Execute query with organization details
+    const { count, rows } = await Project.findAndCountAll({
+      where: whereClause,
+      include: [
+        {
+          model: Organization,
+          as: 'organization',
+          attributes: ['id', 'name', 'type', 'location', 'focus_areas']
+        }
+      ],
+      order: [['project_id', 'DESC']], // Most recent first
+      limit: parseInt(limit),
+      offset: offset
+    });
+
+    return res.status(200).json({
+      projects: rows,
+      pagination: {
+        total: count,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(count / parseInt(limit))
+      }
+    });
+  } catch (error) {
+    console.error('Browse projects error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+/**
+ * Get public project details by ID
+ * GET /projects/browse/:id
+ */
+const getPublicProject = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+
+    const project = await Project.findOne({
+      where: {
+        project_id: projectId,
+        status: 'open' // Only show open projects
+      },
+      include: [
+        {
+          model: Organization,
+          as: 'organization',
+          attributes: ['id', 'name', 'type', 'location', 'mission', 'focus_areas', 'website']
+        }
+      ]
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found or not available' });
+    }
+
+    return res.status(200).json({ project });
+  } catch (error) {
+    console.error('Get public project error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+/**
+ * Create a new project brief
+ * POST /projects
+ */
+const createProject = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Verify user is nonprofit
+    if (req.user.role !== 'nonprofit') {
+      return res.status(403).json({ error: 'Only nonprofit users can create projects' });
+    }
+
+    // Get organization for this user
+    const organization = await Organization.findOne({ where: { user_id: userId } });
+    
+    if (!organization) {
+      return res.status(404).json({ error: 'Organization not found. Please complete your organization profile first.' });
+    }
+
+    const {
+      title,
+      problem,
+      outcomes,
+      methods_required,
+      timeline,
+      budget_min,
+      data_sensitivity,
+      status
+    } = req.body;
+
+    // Validate required fields
+    if (!title || title.trim() === '') {
+      return res.status(400).json({ error: 'Project title is required' });
+    }
+
+    // Validate budget if provided
+    if (budget_min !== undefined && budget_min !== null) {
+      const budgetNum = parseFloat(budget_min);
+      if (isNaN(budgetNum) || budgetNum < 0) {
+        return res.status(400).json({ error: 'Budget must be a non-negative number' });
+      }
+    }
+
+    // Validate status if provided
+    const validStatuses = ['draft', 'open', 'in_progress', 'completed', 'cancelled'];
+    if (status && !validStatuses.includes(status)) {
+      return res.status(400).json({ 
+        error: `Status must be one of: ${validStatuses.join(', ')}` 
+      });
+    }
+
+    // Create project
+    const project = await Project.create({
+      title: title.trim(),
+      problem: problem ? problem.trim() : null,
+      outcomes: outcomes ? outcomes.trim() : null,
+      methods_required: methods_required ? methods_required.trim() : null,
+      timeline: timeline ? timeline.trim() : null,
+      budget_min: budget_min || null,
+      data_sensitivity: data_sensitivity ? data_sensitivity.trim() : null,
+      status: status || 'draft',
+      org_id: organization.id
+    });
+
+    return res.status(201).json({ 
+      message: 'Project created successfully',
+      project
+    });
+  } catch (error) {
+    console.error('Create project error:', error);
+    
+    // Handle validation errors
+    if (error.name === 'SequelizeValidationError') {
+      return res.status(400).json({ 
+        error: 'Validation error',
+        details: error.errors.map(e => e.message)
+      });
+    }
+
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+/**
+ * Get all projects for current user's organization
+ * GET /projects
+ */
+const getProjects = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Verify user is nonprofit
+    if (req.user.role !== 'nonprofit') {
+      return res.status(403).json({ error: 'Only nonprofit users can access projects' });
+    }
+
+    // Get organization for this user
+    const organization = await Organization.findOne({ where: { user_id: userId } });
+    
+    if (!organization) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    // Optional filtering by status
+    const { status } = req.query;
+    const whereClause = { org_id: organization.id };
+    
+    if (status) {
+      whereClause.status = status;
+    }
+
+    const projects = await Project.findAll({ 
+      where: whereClause,
+      order: [['project_id', 'DESC']] // Most recent first
+    });
+
+    return res.status(200).json({ projects });
+  } catch (error) {
+    console.error('Get projects error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+/**
+ * Get a single project by ID
+ * GET /projects/:id
+ */
+const getProject = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const projectId = req.params.id;
+
+    // Verify user is nonprofit
+    if (req.user.role !== 'nonprofit') {
+      return res.status(403).json({ error: 'Only nonprofit users can access projects' });
+    }
+
+    // Get organization for this user
+    const organization = await Organization.findOne({ where: { user_id: userId } });
+    
+    if (!organization) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    const project = await Project.findOne({
+      where: {
+        project_id: projectId,
+        org_id: organization.id
+      }
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    return res.status(200).json({ project });
+  } catch (error) {
+    console.error('Get project error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+/**
+ * Update a project
+ * PUT /projects/:id
+ */
+const updateProject = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const projectId = req.params.id;
+
+    // Verify user is nonprofit
+    if (req.user.role !== 'nonprofit') {
+      return res.status(403).json({ error: 'Only nonprofit users can update projects' });
+    }
+
+    // Get organization for this user
+    const organization = await Organization.findOne({ where: { user_id: userId } });
+    
+    if (!organization) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    const project = await Project.findOne({
+      where: {
+        project_id: projectId,
+        org_id: organization.id
+      }
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    const allowedFields = [
+      'title',
+      'problem',
+      'outcomes',
+      'methods_required',
+      'timeline',
+      'budget_min',
+      'data_sensitivity',
+      'status'
+    ];
+
+    // Filter only allowed fields from request body
+    const updates = {};
+    Object.keys(req.body).forEach(key => {
+      if (allowedFields.includes(key) && req.body[key] !== undefined) {
+        updates[key] = req.body[key];
+      }
+    });
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ error: 'No valid update fields provided' });
+    }
+
+    // Validate title if being updated
+    if (updates.title && updates.title.trim() === '') {
+      return res.status(400).json({ error: 'Project title cannot be empty' });
+    }
+
+    // Validate budget if being updated
+    if (updates.budget_min !== undefined && updates.budget_min !== null) {
+      const budgetNum = parseFloat(updates.budget_min);
+      if (isNaN(budgetNum) || budgetNum < 0) {
+        return res.status(400).json({ error: 'Budget must be a non-negative number' });
+      }
+    }
+
+    // Validate status if being updated
+    if (updates.status) {
+      const validStatuses = ['draft', 'open', 'in_progress', 'completed', 'cancelled'];
+      if (!validStatuses.includes(updates.status)) {
+        return res.status(400).json({ 
+          error: `Status must be one of: ${validStatuses.join(', ')}` 
+        });
+      }
+    }
+
+    // Update project
+    await project.update(updates);
+
+    return res.status(200).json({ 
+      message: 'Project updated successfully',
+      project 
+    });
+  } catch (error) {
+    console.error('Update project error:', error);
+    
+    // Handle validation errors
+    if (error.name === 'SequelizeValidationError') {
+      return res.status(400).json({ 
+        error: 'Validation error',
+        details: error.errors.map(e => e.message)
+      });
+    }
+
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+/**
+ * Delete a project
+ * DELETE /projects/:id
+ */
+const deleteProject = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const projectId = req.params.id;
+
+    // Verify user is nonprofit
+    if (req.user.role !== 'nonprofit') {
+      return res.status(403).json({ error: 'Only nonprofit users can delete projects' });
+    }
+
+    // Get organization for this user
+    const organization = await Organization.findOne({ where: { user_id: userId } });
+    
+    if (!organization) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    const project = await Project.findOne({
+      where: {
+        project_id: projectId,
+        org_id: organization.id
+      }
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // Delete the project
+    await project.destroy();
+
+    return res.status(200).json({ 
+      message: 'Project deleted successfully' 
+    });
+  } catch (error) {
+    console.error('Delete project error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+module.exports = {
+  browseProjects,
+  getPublicProject,
+  createProject,
+  getProjects,
+  getProject,
+  updateProject,
+  deleteProject
+};

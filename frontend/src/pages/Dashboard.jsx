@@ -3,14 +3,88 @@ import TopBar from "../components/TopBar";
 import Footer from "../components/Footer";
 import { useAuth } from "../auth/AuthContext";
 
+// Import nonprofit components
+import ProjectForm from "../components/projects/ProjectForm";
+import ProjectList from "../components/projects/ProjectList";
+
 // Example dashboard components for each role
 function NonprofitDashboard({ user }) {
+  const [activeTab, setActiveTab] = useState("projects");
+  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const handleProjectSuccess = (project) => {
+    setEditingProjectId(null);
+    setRefreshTrigger((prev) => prev + 1);
+    setActiveTab("projects");
+  };
+
+  const handleEdit = (projectId) => {
+    setEditingProjectId(projectId);
+    setActiveTab("create");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProjectId(null);
+    setActiveTab("projects");
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "projects":
+        return <ProjectList onEdit={handleEdit} onRefresh={refreshTrigger} />;
+      case "create":
+        return (
+          <ProjectForm
+            projectId={editingProjectId}
+            onSuccess={handleProjectSuccess}
+            onCancel={handleCancelEdit}
+          />
+        );
+      default:
+        return <ProjectList onEdit={handleEdit} onRefresh={refreshTrigger} />;
+    }
+  };
+
   return (
-    <div>
-      <h2>Welcome Nonprofit!</h2>
-      <p>Name: {user.profile?.name || user.name}</p>
-      <p>Email: {user.email}</p>
-      {/* Add more nonprofit-specific content here */}
+    <div className="page-root">
+      <TopBar />
+      <main className="page-content container py-5">
+        <h1 className="mb-4">Nonprofit Dashboard</h1>
+        <p className="text-muted mb-4">
+          Welcome, {user.profile?.name || user.name}! ({user.email})
+        </p>
+
+        {/* Tab Navigation */}
+        <ul className="nav nav-tabs mb-4">
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "projects" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("projects");
+                setEditingProjectId(null);
+              }}
+            >
+              My Projects
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === "create" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("create");
+                setEditingProjectId(null);
+              }}
+            >
+              {editingProjectId ? "Edit Project" : "Create New Project"}
+            </button>
+          </li>
+        </ul>
+
+        {/* Content Area */}
+        <div className="dashboard-content-area">{renderContent()}</div>
+      </main>
+      <Footer />
     </div>
   );
 }

@@ -9,11 +9,10 @@ import { Link } from 'react-router-dom'
 function UtilityNav(){
   return (
     <nav className="d-none d-md-flex gap-3">
+      <Link to="/" className="nav-link">Home</Link>
+      <Link to="/browse" className="nav-link">Browse Projects</Link>
       <a href="#about" className="nav-link">About</a>
       <a href="#how" className="nav-link">How it Works</a>
-      <a href="#pricing" className="nav-link">Pricing</a>
-      <a href="#faq" className="nav-link">FAQ</a>
-      <a href="#contact" className="nav-link">Contact</a>
     </nav>
   )
 }
@@ -49,16 +48,23 @@ export default function TopBar() {
                 Hi, <strong className="fw-semibold">{auth.user?.name || auth.user?.email}</strong>
               </span>
 
-              {/* 2. Profile Button/Link */}
-              {/* Using a Link to navigate to the user's specific dashboard/profile route */}
+              {/* 2. Dashboard Button/Link */}
               <Link
-                to={`/dashboard/${userRole}`} // e.g., /dashboard/nonprofit
+                to={`/dashboard/${userRole}`}
                 className="btn btn-primary btn-sm"
               >
-                Profile
+                Dashboard
               </Link>
 
-              {/* 3. Logout Button */}
+              {/* 3. Settings Button/Link */}
+              <Link
+                to="/settings"
+                className="btn btn-outline-primary btn-sm"
+              >
+                Settings
+              </Link>
+
+              {/* 4. Logout Button */}
               <button
                 className="btn btn-outline-secondary btn-sm"
                 onClick={() => auth.logout()}

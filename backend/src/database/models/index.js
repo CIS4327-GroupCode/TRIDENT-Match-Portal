@@ -8,10 +8,15 @@ const Rating = require('./Rating');
 const Milestone = require('./Milestone');
 const Message = require('./Message');
 const AuditLog = require('./AuditLog');
+const UserPreferences = require('./UserPreferences');
 
 // User <-> ResearcherProfile (one-to-one)
 User.hasOne(ResearcherProfile, { foreignKey: 'user_id', as: 'researcherProfile' });
 ResearcherProfile.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+// User <-> UserPreferences (one-to-one)
+User.hasOne(UserPreferences, { foreignKey: 'user_id', as: 'preferences' });
+UserPreferences.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
 // Organization <-> Project
 Organization.hasMany(Project, { foreignKey: 'org_id', as: 'projects' });
@@ -63,5 +68,6 @@ module.exports = {
   Rating,
   Milestone,
   Message,
-  AuditLog
+  AuditLog,
+  UserPreferences
 };

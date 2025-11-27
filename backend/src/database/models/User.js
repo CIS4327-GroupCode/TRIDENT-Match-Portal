@@ -54,6 +54,11 @@ User.init(
       allowNull: false,
       defaultValue: 'researcher'
     },
+    account_status: {
+      type: DataTypes.ENUM('active', 'pending', 'suspended'),
+      allowNull: false,
+      defaultValue: 'active'
+    },
     mfa_enabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -68,6 +73,11 @@ User.init(
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW
+    },
+    deleted_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null
     }
   },
   {
@@ -77,7 +87,9 @@ User.init(
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: 'updated_at',
-    underscored: true
+    underscored: true,
+    paranoid: true,
+    deletedAt: 'deleted_at'
   }
 );
 

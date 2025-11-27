@@ -70,10 +70,6 @@ Project.init(
         key: 'id'
       },
       field: 'org_id'
-    },
-    id: {
-      type: DataTypes.STRING(255),
-      allowNull: true
     }
   },
   {

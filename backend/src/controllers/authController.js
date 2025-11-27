@@ -6,11 +6,44 @@ const jwt = require("jsonwebtoken");
 // Register controller
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role, mfa_enabled } = req.body || {};
+    const { 
+      name, 
+      email, 
+      password, 
+      role, 
+      mfa_enabled,
+      organizationData,
+      researcherData 
+    } = req.body || {};
+    
     if (!name || !email || !password)
       return res
         .status(400)
         .json({ error: "name, email and password are required" });
+
+    // Validate role
+    const validRoles = ['researcher', 'nonprofit', 'admin'];
+    if (role && !validRoles.includes(role)) {
+      return res.status(400).json({ error: "invalid role. Must be one of: researcher, nonprofit, admin" });
+    }
+
+    // Validate nonprofit-specific requirements
+    if (role === 'nonprofit' && !organizationData) {
+      return res.status(400).json({ 
+        error: "organizationData is required for nonprofit role",
+        required: ["name"]
+      });
+    }
+
+    // Validate researcher-specific requirements
+    if (role === 'researcher' && researcherData) {
+      // Validate rate range if provided
+      if (researcherData.rate_min && researcherData.rate_max) {
+        if (researcherData.rate_min > researcherData.rate_max) {
+          return res.status(400).json({ error: "rate_min must be less than rate_max" });
+        }
+      }
+    }
 
     // basic email normalization
     const normEmail = String(email).trim().toLowerCase();
@@ -22,13 +55,22 @@ exports.register = async (req, res) => {
 
     const saltRounds = 10;
     const password_hash = await bcrypt.hash(password, saltRounds);
-    // create user - createUser
-    const user = await authModels.createUser(name, normEmail, password_hash, role, mfa_enabled);
+    
+    // create user with profile - createUser
+    const user = await authModels.createUser(
+      name, 
+      normEmail, 
+      password_hash, 
+      role, 
+      mfa_enabled,
+      organizationData,
+      researcherData
+    );
 
     // Sign JWT and return created user (do not return password_hash)
     const secret = process.env.JWT_SECRET;
     const token = jwt.sign(
-      { sub: user.id, role: user.role, email: user.email },
+      { userId: user.id, role: user.role, email: user.email },
       secret,
       { expiresIn: "7d" }
     );
@@ -67,7 +109,7 @@ exports.login = async (req, res) => {
 
     const secret = process.env.JWT_SECRET;
     const token = jwt.sign(
-      { sub: user.id, role: user.role, email: user.email },
+      { userId: user.id, role: user.role, email: user.email },
       secret,
       { expiresIn: "7d" }
     );

@@ -57,9 +57,13 @@ export function AuthProvider({ children }) {
             localStorage.setItem('trident_user', JSON.stringify(u))
             localStorage.setItem('trident_token', t)
         }catch(e){ console.warn('failed to persist auth', e) }
-        // prefer explicit role route
+        // Redirect based on role
         const role = u?.role || 'researcher'
-        navigate(`/dashboard/${role}`, { replace: true })
+        if (role === 'admin') {
+            navigate('/admin', { replace: true })
+        } else {
+            navigate(`/dashboard/${role}`, { replace: true })
+        }
     }
 
     const value = {
