@@ -41,14 +41,11 @@ const updateOrganization = async (req, res) => {
 
     const allowedFields = [
       'name',
-      'type',
-      'location',
-      'website',
+      'EIN',
       'mission',
-      'focus_areas',
-      'budget_range',
-      'team_size',
-      'established_year'
+      'focus_tags',
+      'compliance_flags',
+      'contacts'
     ];
 
     // Filter only allowed fields from request body

@@ -60,7 +60,13 @@ Project.init(
     status: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      defaultValue: 'open'
+      defaultValue: 'draft',
+      validate: {
+        isIn: {
+          args: [['draft', 'pending_review', 'approved', 'rejected', 'needs_revision', 'open', 'in_progress', 'completed', 'cancelled']],
+          msg: 'Invalid status value'
+        }
+      }
     },
     org_id: {
       type: DataTypes.INTEGER,

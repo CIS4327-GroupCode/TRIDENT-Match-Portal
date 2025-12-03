@@ -50,7 +50,7 @@ export default function TopBar() {
 
               {/* 2. Dashboard Button/Link */}
               <Link
-                to={`/dashboard/${userRole}`}
+                to={userRole === 'admin' ? '/admin' : `/dashboard/${userRole}`}
                 className="btn btn-primary btn-sm"
               >
                 Dashboard

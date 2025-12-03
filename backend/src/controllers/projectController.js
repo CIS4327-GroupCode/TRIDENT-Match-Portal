@@ -1,4 +1,4 @@
-const { Project, Organization } = require('../database/models');
+const { Project, Organization, ProjectReview, User } = require('../database/models');
 const { Op } = require('sequelize');
 
 /**
@@ -66,7 +66,7 @@ const browseProjects = async (req, res) => {
         {
           model: Organization,
           as: 'organization',
-          attributes: ['id', 'name', 'type', 'location', 'focus_areas']
+          attributes: ['id', 'name', 'mission', 'focus_tags']
         }
       ],
       order: [['project_id', 'DESC']], // Most recent first
@@ -106,7 +106,7 @@ const getPublicProject = async (req, res) => {
         {
           model: Organization,
           as: 'organization',
-          attributes: ['id', 'name', 'type', 'location', 'mission', 'focus_areas', 'website']
+          attributes: ['id', 'name', 'mission', 'focus_tags', 'EIN', 'contacts']
         }
       ]
     });
@@ -135,12 +135,19 @@ const createProject = async (req, res) => {
       return res.status(403).json({ error: 'Only nonprofit users can create projects' });
     }
 
-    // Get organization for this user
-    const organization = await Organization.findOne({ where: { user_id: userId } });
+    // Get user with organization
+    const user = await User.findByPk(userId, {
+      include: [{
+        model: Organization,
+        as: 'organization'
+      }]
+    });
     
-    if (!organization) {
+    if (!user || !user.organization) {
       return res.status(404).json({ error: 'Organization not found. Please complete your organization profile first.' });
     }
+
+    const organization = user.organization;
 
     const {
       title,
@@ -219,16 +226,21 @@ const getProjects = async (req, res) => {
       return res.status(403).json({ error: 'Only nonprofit users can access projects' });
     }
 
-    // Get organization for this user
-    const organization = await Organization.findOne({ where: { user_id: userId } });
+    // Get user with organization
+    const user = await User.findByPk(userId, {
+      include: [{
+        model: Organization,
+        as: 'organization'
+      }]
+    });
     
-    if (!organization) {
-      return res.status(404).json({ error: 'Organization not found' });
+    if (!user || !user.organization) {
+      return res.status(404).json({ error: 'Organization not found for this user' });
     }
 
     // Optional filtering by status
     const { status } = req.query;
-    const whereClause = { org_id: organization.id };
+    const whereClause = { org_id: user.organization.id };
     
     if (status) {
       whereClause.status = status;
@@ -260,17 +272,22 @@ const getProject = async (req, res) => {
       return res.status(403).json({ error: 'Only nonprofit users can access projects' });
     }
 
-    // Get organization for this user
-    const organization = await Organization.findOne({ where: { user_id: userId } });
+    // Get user with organization
+    const user = await User.findByPk(userId, {
+      include: [{
+        model: Organization,
+        as: 'organization'
+      }]
+    });
     
-    if (!organization) {
+    if (!user || !user.organization) {
       return res.status(404).json({ error: 'Organization not found' });
     }
 
     const project = await Project.findOne({
       where: {
         project_id: projectId,
-        org_id: organization.id
+        org_id: user.organization.id
       }
     });
 
@@ -299,17 +316,22 @@ const updateProject = async (req, res) => {
       return res.status(403).json({ error: 'Only nonprofit users can update projects' });
     }
 
-    // Get organization for this user
-    const organization = await Organization.findOne({ where: { user_id: userId } });
+    // Get user with organization
+    const user = await User.findByPk(userId, {
+      include: [{
+        model: Organization,
+        as: 'organization'
+      }]
+    });
     
-    if (!organization) {
+    if (!user || !user.organization) {
       return res.status(404).json({ error: 'Organization not found' });
     }
 
     const project = await Project.findOne({
       where: {
         project_id: projectId,
-        org_id: organization.id
+        org_id: user.organization.id
       }
     });
 
@@ -399,17 +421,22 @@ const deleteProject = async (req, res) => {
       return res.status(403).json({ error: 'Only nonprofit users can delete projects' });
     }
 
-    // Get organization for this user
-    const organization = await Organization.findOne({ where: { user_id: userId } });
+    // Get user with organization
+    const user = await User.findByPk(userId, {
+      include: [{
+        model: Organization,
+        as: 'organization'
+      }]
+    });
     
-    if (!organization) {
+    if (!user || !user.organization) {
       return res.status(404).json({ error: 'Organization not found' });
     }
 
     const project = await Project.findOne({
       where: {
         project_id: projectId,
-        org_id: organization.id
+        org_id: user.organization.id
       }
     });
 
@@ -429,6 +456,80 @@ const deleteProject = async (req, res) => {
   }
 };
 
+/**
+ * Submit project for review
+ * POST /projects/:id/submit-for-review
+ */
+const submitForReview = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const projectId = req.params.id;
+
+    // Verify user is nonprofit
+    if (req.user.role !== 'nonprofit') {
+      return res.status(403).json({ error: 'Only nonprofit users can submit projects for review' });
+    }
+
+    // Get user with organization
+    const user = await User.findByPk(userId, {
+      include: [{
+        model: Organization,
+        as: 'organization'
+      }]
+    });
+    
+    if (!user || !user.organization) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    const project = await Project.findOne({
+      where: {
+        project_id: projectId,
+        org_id: user.organization.id
+      }
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    // Validate current status
+    if (!['draft', 'needs_revision'].includes(project.status)) {
+      return res.status(400).json({ 
+        error: `Cannot submit project with status "${project.status}". Only draft or needs_revision projects can be submitted for review.` 
+      });
+    }
+
+    // Validate required fields
+    if (!project.title || project.title.trim() === '') {
+      return res.status(400).json({ error: 'Project title is required before submission' });
+    }
+
+    const previousStatus = project.status;
+
+    // Update project status
+    await project.update({ status: 'pending_review' });
+
+    // Create review record
+    await ProjectReview.create({
+      project_id: projectId,
+      reviewer_id: null, // No reviewer yet (submitted by nonprofit)
+      action: 'submitted',
+      previous_status: previousStatus,
+      new_status: 'pending_review',
+      reviewed_at: new Date()
+    });
+
+    return res.status(200).json({ 
+      message: 'Project submitted for review successfully',
+      project
+    });
+  } catch (error) {
+    console.error('Submit for review error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 module.exports = {
   browseProjects,
   getPublicProject,
@@ -436,5 +537,6 @@ module.exports = {
   getProjects,
   getProject,
   updateProject,
-  deleteProject
+  deleteProject,
+  submitForReview
 };

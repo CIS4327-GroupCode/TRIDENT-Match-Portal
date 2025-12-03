@@ -1,4 +1,5 @@
-const { User, Organization, ResearcherProfile, Project, Milestone, sequelize } = require('../database/models');
+const { User, Organization, ResearcherProfile, Project, Milestone, ProjectReview, sequelize } = require('../database/models');
+const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 
 /**
@@ -62,9 +63,9 @@ const getAllUsers = async (req, res) => {
 
     // Search by name or email
     if (search) {
-      where[sequelize.Op.or] = [
-        { name: { [sequelize.Op.iLike]: `%${search}%` } },
-        { email: { [sequelize.Op.iLike]: `%${search}%` } }
+      where[Op.or] = [
+        { name: { [Op.iLike]: `%${search}%` } },
+        { email: { [Op.iLike]: `%${search}%` } }
       ];
     }
 
@@ -78,7 +79,13 @@ const getAllUsers = async (req, res) => {
         {
           model: ResearcherProfile,
           as: 'researcherProfile',
-          attributes: ['affiliation', 'domains'],
+          attributes: ['affiliation', 'domains', 'methods', 'tools', 'rate_min', 'rate_max', 'availability'],
+          required: false
+        },
+        {
+          model: Organization,
+          as: 'organization',
+          attributes: ['id', 'name', 'EIN'],
           required: false
         }
       ],
@@ -319,6 +326,10 @@ const approveUser = async (req, res) => {
  * Get all projects with filtering
  * GET /admin/projects
  */
+/**
+ * Get all projects with filtering and pagination
+ * GET /admin/projects
+ */
 const getAllProjects = async (req, res) => {
   try {
     const { 
@@ -353,7 +364,7 @@ const getAllProjects = async (req, res) => {
       ],
       limit: parseInt(limit),
       offset,
-      order: [['created_at', 'DESC']]
+      order: [['project_id', 'DESC']]
     });
 
     res.status(200).json({
@@ -368,6 +379,40 @@ const getAllProjects = async (req, res) => {
   } catch (error) {
     console.error('Get all projects error:', error);
     res.status(500).json({ error: 'Failed to fetch projects' });
+  }
+};
+
+/**
+ * Get project by ID with full details
+ * GET /admin/projects/:id
+ */
+const getProjectById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const project = await Project.findByPk(id, {
+      include: [
+        {
+          model: Organization,
+          as: 'organization',
+          attributes: ['id', 'name', 'EIN', 'mission', 'focus_tags', 'contacts']
+        },
+        {
+          model: Milestone,
+          as: 'milestones',
+          attributes: ['id', 'name', 'description', 'due_date', 'status', 'completed_at', 'created_at']
+        }
+      ]
+    });
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    res.status(200).json({ project });
+  } catch (error) {
+    console.error('Get project by ID error:', error);
+    res.status(500).json({ error: 'Failed to fetch project details' });
   }
 };
 
@@ -536,14 +581,22 @@ const getAllOrganizations = async (req, res) => {
     const where = {};
 
     if (search) {
-      where[sequelize.Op.or] = [
-        { name: { [sequelize.Op.iLike]: `%${search}%` } },
-        { EIN: { [sequelize.Op.iLike]: `%${search}%` } }
+      where[Op.or] = [
+        { name: { [Op.iLike]: `%${search}%` } },
+        { EIN: { [Op.iLike]: `%${search}%` } }
       ];
     }
 
     const { count, rows: organizations } = await Organization.findAndCountAll({
       where,
+      include: [
+        {
+          model: User,
+          as: 'users',
+          attributes: ['id', 'name', 'email', 'account_status'],
+          required: false
+        }
+      ],
       limit: parseInt(limit),
       offset,
       order: [['id', 'DESC']]
@@ -597,6 +650,244 @@ const deleteOrganization = async (req, res) => {
   }
 };
 
+/**
+ * Get projects pending review
+ * GET /admin/projects/pending
+ */
+const getPendingProjects = async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    const { count, rows: projects } = await Project.findAndCountAll({
+      where: {
+        status: ['pending_review', 'needs_revision']
+      },
+      include: [
+        {
+          model: Organization,
+          as: 'organization',
+          attributes: ['id', 'name', 'EIN', 'mission', 'focus_tags']
+        },
+        {
+          model: ProjectReview,
+          as: 'reviews',
+          include: [
+            {
+              model: User,
+              as: 'reviewer',
+              attributes: ['id', 'name', 'email']
+            }
+          ],
+          order: [['created_at', 'DESC']]
+        }
+      ],
+      order: [['project_id', 'ASC']],
+      limit: parseInt(limit),
+      offset
+    });
+
+    res.status(200).json({
+      projects,
+      pagination: {
+        total: count,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(count / parseInt(limit))
+      }
+    });
+  } catch (error) {
+    console.error('Get pending projects error:', error);
+    res.status(500).json({ error: 'Failed to fetch pending projects' });
+  }
+};
+
+/**
+ * Approve a project
+ * POST /admin/projects/:id/approve
+ */
+const approveProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { feedback } = req.body;
+    const reviewerId = req.user.id;
+
+    const project = await Project.findByPk(id);
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    if (project.status !== 'pending_review') {
+      return res.status(400).json({ 
+        error: `Cannot approve project with status "${project.status}". Project must be in pending_review status.` 
+      });
+    }
+
+    const previousStatus = project.status;
+
+    // Update project status
+    await project.update({ status: 'approved' });
+
+    // Create review record
+    await ProjectReview.create({
+      project_id: id,
+      reviewer_id: reviewerId,
+      action: 'approved',
+      previous_status: previousStatus,
+      new_status: 'approved',
+      feedback: feedback || null,
+      reviewed_at: new Date()
+    });
+
+    // Fetch updated project with associations
+    const updatedProject = await Project.findByPk(id, {
+      include: [
+        {
+          model: Organization,
+          as: 'organization',
+          attributes: ['id', 'name', 'type']
+        }
+      ]
+    });
+
+    res.status(200).json({ 
+      message: 'Project approved successfully',
+      project: updatedProject
+    });
+  } catch (error) {
+    console.error('Approve project error:', error);
+    res.status(500).json({ error: 'Failed to approve project' });
+  }
+};
+
+/**
+ * Reject a project
+ * POST /admin/projects/:id/reject
+ */
+const rejectProject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rejection_reason } = req.body;
+    const reviewerId = req.user.id;
+
+    if (!rejection_reason || rejection_reason.trim() === '') {
+      return res.status(400).json({ error: 'Rejection reason is required' });
+    }
+
+    const project = await Project.findByPk(id);
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    if (project.status !== 'pending_review') {
+      return res.status(400).json({ 
+        error: `Cannot reject project with status "${project.status}". Project must be in pending_review status.` 
+      });
+    }
+
+    const previousStatus = project.status;
+
+    // Update project status
+    await project.update({ status: 'rejected' });
+
+    // Create review record
+    await ProjectReview.create({
+      project_id: id,
+      reviewer_id: reviewerId,
+      action: 'rejected',
+      previous_status: previousStatus,
+      new_status: 'rejected',
+      feedback: rejection_reason,
+      reviewed_at: new Date()
+    });
+
+    // Fetch updated project with associations
+    const updatedProject = await Project.findByPk(id, {
+      include: [
+        {
+          model: Organization,
+          as: 'organization',
+          attributes: ['id', 'name', 'type']
+        }
+      ]
+    });
+
+    res.status(200).json({ 
+      message: 'Project rejected',
+      project: updatedProject
+    });
+  } catch (error) {
+    console.error('Reject project error:', error);
+    res.status(500).json({ error: 'Failed to reject project' });
+  }
+};
+
+/**
+ * Request changes to a project
+ * POST /admin/projects/:id/request-changes
+ */
+const requestProjectChanges = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { changes_requested, feedback } = req.body;
+    const reviewerId = req.user.id;
+
+    if (!changes_requested || changes_requested.trim() === '') {
+      return res.status(400).json({ error: 'Changes requested description is required' });
+    }
+
+    const project = await Project.findByPk(id);
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+
+    if (project.status !== 'pending_review') {
+      return res.status(400).json({ 
+        error: `Cannot request changes for project with status "${project.status}". Project must be in pending_review status.` 
+      });
+    }
+
+    const previousStatus = project.status;
+
+    // Update project status
+    await project.update({ status: 'needs_revision' });
+
+    // Create review record
+    await ProjectReview.create({
+      project_id: id,
+      reviewer_id: reviewerId,
+      action: 'needs_revision',
+      previous_status: previousStatus,
+      new_status: 'needs_revision',
+      feedback: feedback || null,
+      changes_requested: changes_requested,
+      reviewed_at: new Date()
+    });
+
+    // Fetch updated project with associations
+    const updatedProject = await Project.findByPk(id, {
+      include: [
+        {
+          model: Organization,
+          as: 'organization',
+          attributes: ['id', 'name', 'type']
+        }
+      ]
+    });
+
+    res.status(200).json({ 
+      message: 'Changes requested',
+      project: updatedProject
+    });
+  } catch (error) {
+    console.error('Request project changes error:', error);
+    res.status(500).json({ error: 'Failed to request project changes' });
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getAllUsers,
@@ -607,10 +898,15 @@ module.exports = {
   permanentlyDeleteUser,
   approveUser,
   getAllProjects,
+  getProjectById,
   deleteProject,
   updateProjectStatus,
   getAllMilestones,
   deleteMilestone,
   getAllOrganizations,
-  deleteOrganization
+  deleteOrganization,
+  getPendingProjects,
+  approveProject,
+  rejectProject,
+  requestProjectChanges
 };

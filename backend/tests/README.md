@@ -1,362 +1,318 @@
-# Test Suite Documentation
+/**
+ * README for Test Suite
+ * Documentation for running and maintaining tests
+ */
+
+# TRIDENT Match Portal - Test Suite
 
 ## Overview
 
-This directory contains the automated test suite for the TRIDENT Match Portal backend, specifically designed to verify the Sequelize ORM migration progress.
+**Last Updated**: December 2, 2025  
+**Test Count**: 59 tests  
+**Pass Rate**: 100%
 
-## Structure
+This test suite provides comprehensive unit testing for the TRIDENT Match Portal backend. Tests are designed to be **database-independent** and use mocking to isolate business logic.
+
+## Test Structure
 
 ```
 tests/
-├── setup.js                    # Global Jest setup
-├── utils/
-│   └── testHelper.js          # Test utilities and database helpers
-├── models/
-│   └── user.test.js           # User model unit tests (30+ tests)
-└── integration/
-    ├── auth.test.js           # Auth endpoint tests (25+ tests)
-    └── database.test.js       # Migration verification (15+ tests)
+├── setup.js                    # Global test configuration
+├── jest.config.js              # Jest configuration
+├── mocks/                      # Mock implementations
+│   ├── auth.js                 # Authentication middleware mocks
+│   └── models.js               # Sequelize model mocks
+└── unit/                       # Unit tests
+    ├── authController.test.js
+    ├── auth.middleware.test.js
+    └── userController.test.js
 ```
 
 ## Running Tests
 
-### All Tests
+### Run All Tests
 ```bash
 npm test
 ```
 
-### Specific Test Suites
+### Run Specific Test File
 ```bash
-# Model tests only
-npm run test:models
-
-# Integration tests only
-npm run test:integration
-
-# Migration verification only
-npm run test:migrations
-
-# With coverage report
-npm run test:coverage
-
-# Watch mode (auto-rerun on changes)
-npm run test:watch
+npm test -- authController.test.js
 ```
 
-## Test Categories
-
-### 1. Model Tests (`tests/models/`)
-
-**Purpose:** Verify Sequelize model definitions, validations, and methods
-
-**User Model Tests:**
-- Model definition and structure
-- Field validations (name, email, password, role)
-- Email normalization and uniqueness
-- Timestamp functionality
-- Instance methods (toSafeObject)
-- Class methods (findByEmail)
-- CRUD operations
-
-**Example:**
+### Run with Coverage
 ```bash
-npm test -- tests/models/user.test.js
+npm test -- --coverage
 ```
 
-### 2. Integration Tests (`tests/integration/`)
-
-**Purpose:** Test API endpoints and database interactions
-
-**Auth Tests:**
-- POST /auth/register endpoint
-- POST /auth/login endpoint
-- Password hashing security
-- JWT token generation
-- Input validation
-- Error handling
-
-**Database Tests:**
-- Table existence verification
-- Schema validation
-- Migration tracking
-- Database connection
-
-**Example:**
+### Run in Watch Mode
 ```bash
-npm test -- tests/integration/auth.test.js
+npm test -- --watch
 ```
 
-## Test Helpers
-
-### Database Setup/Teardown
-
-```javascript
-const {
-  setupTestDatabase,
-  syncDatabase,
-  clearDatabase,
-  closeDatabase
-} = require('../utils/testHelper');
-
-describe('My Test Suite', () => {
-  beforeAll(async () => {
-    await setupTestDatabase();
-    await syncDatabase();
-  });
-
-  afterAll(async () => {
-    await closeDatabase();
-  });
-
-  beforeEach(async () => {
-    await clearDatabase();
-  });
-
-  // Your tests here
-});
+### Run Verbose Output
+```bash
+npm test -- --verbose
 ```
 
-### Creating Test Data
+## Writing Tests
+
+### Test File Naming Convention
+- Unit tests: `*.test.js` in `tests/unit/`
+- Place in same subdirectory structure as source
+
+### Basic Test Template
 
 ```javascript
-const { createTestUser, generateEmail } = require('../utils/testHelper');
+const controllerFunction = require('../../src/controllers/myController');
+const { Model } = require('../../src/database/models');
 
-test('should do something', async () => {
-  const user = await createTestUser({
-    name: 'Custom Name',
-    email: generateEmail('custom'),
-    role: 'admin'
-  });
-  
-  // Test with user...
-});
-```
+// Mock dependencies
+jest.mock('../../src/database/models');
 
-### Expecting Errors
+describe('My Controller', () => {
+  let req, res;
 
-```javascript
-const { expectToReject } = require('../utils/testHelper');
-
-test('should fail validation', async () => {
-  const error = await expectToReject(
-    User.create({ email: 'invalid' })
-  );
-  
-  expect(error.name).toBe('SequelizeValidationError');
-});
-```
-
-## Writing New Tests
-
-### 1. Create Test File
-
-```javascript
-// tests/models/organization.test.js
-const { Organization } = require('../../src/database/models');
-const {
-  setupTestDatabase,
-  syncDatabase,
-  clearDatabase,
-  closeDatabase
-} = require('../utils/testHelper');
-
-describe('Organization Model', () => {
-  beforeAll(async () => {
-    await setupTestDatabase();
-    await syncDatabase();
-  });
-
-  afterAll(async () => {
-    await closeDatabase();
-  });
-
-  beforeEach(async () => {
-    await clearDatabase();
-  });
-
-  test('should create an organization', async () => {
-    const org = await Organization.create({
-      name: 'Test Org',
-      description: 'A test organization'
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
     
-    expect(org.id).toBeDefined();
-    expect(org.name).toBe('Test Org');
+    req = { body: {}, params: {}, user: { id: 1 } };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis()
+    };
+  });
+
+  describe('myFunction', () => {
+    it('should do something successfully', async () => {
+      Model.findOne.mockResolvedValue({ id: 1, name: 'Test' });
+      
+      await controllerFunction.myFunction(req, res);
+      
+      expect(Model.findOne).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+        success: true
+      }));
+    });
+
+    it('should handle errors', async () => {
+      Model.findOne.mockRejectedValue(new Error('DB Error'));
+      
+      await controllerFunction.myFunction(req, res);
+      
+      expect(res.status).toHaveBeenCalledWith(500);
+    });
   });
 });
 ```
 
-### 2. Run Your Test
+## Mocking Guide
 
-```bash
-npm test -- tests/models/organization.test.js
-```
-
-## Configuration
-
-### Jest Config (`jest.config.js`)
+### Mocking Sequelize Models
 
 ```javascript
-module.exports = {
-  testEnvironment: 'node',
-  testTimeout: 30000,
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
-  collectCoverageFrom: ['src/**/*.js'],
-  coverageThreshold: {
-    global: {
-      branches: 50,
-      functions: 50,
-      lines: 50,
-      statements: 50
-    }
+const { User } = require('../../src/database/models');
+
+jest.mock('../../src/database/models', () => ({
+  User: {
+    findByPk: jest.fn(),
+    findOne: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn()
   }
-};
+}));
+
+// In tests:
+User.findByPk.mockResolvedValue({ id: 1, name: 'Test' });
 ```
 
-### Environment Variables
-
-Tests use the `test` environment from `config/database.js`:
+### Mocking Authentication
 
 ```javascript
-test: {
-  url: process.env.TEST_DATABASE_URL || process.env.DATABASE_URL,
-  dialect: 'postgres',
-  logging: false
-}
+const { mockAuthenticate } = require('../mocks/auth');
+
+// Use in controller tests
+app.use(mockAuthenticate({ id: 1, role: 'admin' }));
 ```
 
-## Test Data Management
-
-### Clean Database Between Tests
+### Mocking bcrypt
 
 ```javascript
-beforeEach(async () => {
-  await clearDatabase(); // Truncates all tables
-});
+const bcrypt = require('bcrypt');
+
+jest.mock('bcrypt');
+
+bcrypt.hash.mockResolvedValue('hashed_password');
+bcrypt.compare.mockResolvedValue(true);
 ```
 
-### Use Transactions (Advanced)
+### Mocking JWT
 
 ```javascript
-const { sequelize } = require('../utils/testHelper');
+const jwt = require('jsonwebtoken');
 
-let transaction;
+jest.mock('jsonwebtoken');
 
-beforeEach(async () => {
-  transaction = await sequelize.transaction();
-});
-
-afterEach(async () => {
-  await transaction.rollback();
-});
-
-test('test with transaction', async () => {
-  const user = await User.create({...}, { transaction });
-  // Test...
-});
+jwt.sign.mockReturnValue('mock-token');
+jwt.verify.mockReturnValue({ userId: 1, role: 'admin' });
 ```
 
-## Coverage Reports
+## Test Coverage
 
-### Generate Coverage
+### Current Coverage Goals
+- Statements: 50%
+- Branches: 50%
+- Functions: 50%
+- Lines: 50%
 
+### View Coverage Report
 ```bash
-npm run test:coverage
+npm test -- --coverage
+open coverage/lcov-report/index.html
 ```
 
-### View HTML Report
+## Common Testing Patterns
 
-```bash
-# After running coverage
-open coverage/index.html  # macOS
-start coverage/index.html # Windows
+### Testing Error Handling
+```javascript
+it('should handle database errors', async () => {
+  Model.findOne.mockRejectedValue(new Error('DB Error'));
+  
+  await controller.function(req, res);
+  
+  expect(res.status).toHaveBeenCalledWith(500);
+  expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error' });
+});
 ```
+
+### Testing Validation
+```javascript
+it('should validate required fields', async () => {
+  req.body = {}; // Missing required field
+  
+  await controller.function(req, res);
+  
+  expect(res.status).toHaveBeenCalledWith(400);
+  expect(res.json).toHaveBeenCalledWith(
+    expect.objectContaining({ error: expect.any(String) })
+  );
+});
+```
+
+### Testing Authorization
+```javascript
+it('should deny access for unauthorized users', async () => {
+  req.user = { id: 1, role: 'researcher' }; // Not admin
+  
+  await controller.adminOnlyFunction(req, res);
+  
+  expect(res.status).toHaveBeenCalledWith(403);
+});
+```
+
+## Debugging Tests
+
+### Enable Console Output
+Remove or comment out console mocking in `setup.js`:
+```javascript
+// global.console = { ... };
+```
+
+### Use `fit()` and `fdescribe()`
+Run only specific tests:
+```javascript
+fit('should test only this', () => {
+  // This test runs alone
+});
+
+fdescribe('Focus on this suite', () => {
+  // Only this suite runs
+});
+```
+
+### Use `.only` and `.skip`
+```javascript
+describe.only('Run only this suite', () => {});
+it.skip('Skip this test', () => {});
+```
+
+## Best Practices
+
+✅ **DO:**
+- Clear mocks in `beforeEach`
+- Test one behavior per test
+- Use descriptive test names
+- Mock all external dependencies
+- Test both success and error paths
+- Test edge cases and boundary conditions
+
+❌ **DON'T:**
+- Rely on database state
+- Share state between tests
+- Test implementation details
+- Use real HTTP requests
+- Use real database connections
+- Skip error handling tests
 
 ## Continuous Integration
 
-Tests are designed to run in CI environments:
-
+### GitHub Actions Example
 ```yaml
-# .github/workflows/test.yml
-- name: Run tests
-  env:
-    DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-    NODE_ENV: test
-  run: |
-    cd backend
-    npm test
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      - run: npm ci
+      - run: npm test -- --coverage
+      - uses: codecov/codecov-action@v2
 ```
 
 ## Troubleshooting
 
-### "Cannot connect to database"
+### "Cannot find module" errors
+- Ensure mock paths match actual file structure
+- Check jest.config.js moduleNameMapper
 
-**Solution:** Check DATABASE_URL in .env
-```bash
-cat .env | grep DATABASE_URL
-```
+### "Jest did not exit" warnings
+- Close database connections in `afterAll`
+- Clear timers and intervals
 
-### "Table does not exist"
+### "ReferenceError: module is not defined"
+- Add mock before importing controller
+- Use `jest.mock()` at top of file
 
-**Solution:** Run migrations
-```bash
-npm run db:migrate
-```
-
-### Tests hang
-
-**Solution:** Add forceExit flag
-```bash
-npm test -- --forceExit
-```
-
-### "Too many connections"
-
-**Solution:** Tests use `--runInBand` to run serially (already configured)
-
-## Best Practices
-
-1. **Isolate tests** - Each test should be independent
-2. **Clean up** - Always clear database between tests
-3. **Use factories** - Create test data with helper functions
-4. **Test edge cases** - Not just happy path
-5. **Mock external APIs** - Don't hit real services in tests
-6. **Keep tests fast** - Use transactions where possible
-7. **Descriptive names** - Test names should explain what they verify
-
-## Adding More Tests
-
-### For New Models
-
-1. Copy `tests/models/user.test.js`
-2. Replace `User` with your model
-3. Adjust test cases for your schema
-4. Run `npm test`
-
-### For New Endpoints
-
-1. Copy `tests/integration/auth.test.js`
-2. Update routes and expected responses
-3. Add specific test cases
-4. Run `npm run test:integration`
-
-## Current Test Coverage
-
-| Category | Tests | Coverage |
-|----------|-------|----------|
-| User Model | 30+ | ~95% |
-| Auth Endpoints | 25+ | ~90% |
-| Database Schema | 15+ | 100% |
-| **Total** | **70+** | **~85%** |
+### Tests pass locally but fail in CI
+- Check environment variables
+- Ensure consistent Node version
+- Verify all dependencies in package.json
 
 ## Resources
 
-- [Jest Documentation](https://jestjs.io/)
-- [Sequelize Testing](https://sequelize.org/docs/v6/other-topics/testing/)
-- [Supertest Guide](https://github.com/ladjs/supertest)
-- Project Guide: `../TESTING_GUIDE.md`
+- [Jest Documentation](https://jestjs.io/docs/getting-started)
+- [Testing Best Practices](https://github.com/goldbergyoni/javascript-testing-best-practices)
+- [Jest Cheat Sheet](https://github.com/sapegin/jest-cheat-sheet)
 
----
+## Contributing
 
-**Last Updated:** November 25, 2025  
-**Maintainers:** Danny Huasco - Development Team
+When adding new features:
+1. Write tests first (TDD approach)
+2. Ensure coverage meets minimum thresholds
+3. Update this README if adding new patterns
+4. Run full test suite before committing
+
+## Support
+
+For testing issues or questions:
+1. Check existing test files for examples
+2. Review TESTING_ISSUES_AND_FIXES.md
+3. Ask team members
+4. Create GitHub issue with `testing` label

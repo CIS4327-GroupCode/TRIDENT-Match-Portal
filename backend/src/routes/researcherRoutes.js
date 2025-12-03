@@ -11,4 +11,19 @@ router.use(requireResearcher);
 router.get('/me', researcherController.getResearcherProfile);
 router.put('/me', researcherController.updateResearcherProfile);
 
+// Academic history routes
+router.get('/me/academic', researcherController.getAcademicHistory);
+router.post('/me/academic', researcherController.createAcademicHistory);
+router.put('/me/academic/:id', researcherController.updateAcademicHistory);
+router.delete('/me/academic/:id', researcherController.deleteAcademicHistory);
+
+// Certification routes
+router.get('/me/certifications', researcherController.getCertifications);
+router.post('/me/certifications', researcherController.createCertification);
+router.put('/me/certifications/:id', researcherController.updateCertification);
+router.delete('/me/certifications/:id', researcherController.deleteCertification);
+
+// Projects routes
+router.get('/me/projects', researcherController.getResearcherProjects);
+
 module.exports = router;

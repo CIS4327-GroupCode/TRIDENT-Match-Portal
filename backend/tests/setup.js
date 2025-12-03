@@ -1,16 +1,13 @@
 /**
- * Jest Setup File
- * 
- * Runs before each test file
+ * Test Setup - Runs before all tests
+ * Configures global test environment
  */
 
-// Set test environment
+// Set test environment variables
 process.env.NODE_ENV = 'test';
+process.env.JWT_SECRET = 'test-secret-key-for-testing-purposes-min-32-chars';
 
-// Increase test timeout for database operations
-jest.setTimeout(30000);
-
-// Suppress console.log in tests (optional)
+// Suppress console output during tests (optional)
 // global.console = {
 //   ...console,
 //   log: jest.fn(),
@@ -19,8 +16,3 @@ jest.setTimeout(30000);
 //   warn: jest.fn(),
 //   error: jest.fn(),
 // };
-
-// Global test utilities
-global.testUtils = {
-  // Add any global test utilities here
-};

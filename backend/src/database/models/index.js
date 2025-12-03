@@ -9,6 +9,10 @@ const Milestone = require('./Milestone');
 const Message = require('./Message');
 const AuditLog = require('./AuditLog');
 const UserPreferences = require('./UserPreferences');
+const ProjectReview = require('./ProjectReview');
+const AcademicHistory = require('./AcademicHistory');
+const Certification = require('./Certification');
+const sequelize = require('../index');
 
 // User <-> ResearcherProfile (one-to-one)
 User.hasOne(ResearcherProfile, { foreignKey: 'user_id', as: 'researcherProfile' });
@@ -17,6 +21,10 @@ ResearcherProfile.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 // User <-> UserPreferences (one-to-one)
 User.hasOne(UserPreferences, { foreignKey: 'user_id', as: 'preferences' });
 UserPreferences.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+// User <-> Organization (for nonprofit users)
+User.belongsTo(Organization, { foreignKey: 'org_id', as: 'organization' });
+Organization.hasMany(User, { foreignKey: 'org_id', as: 'users' });
 
 // Organization <-> Project
 Organization.hasMany(Project, { foreignKey: 'org_id', as: 'projects' });
@@ -58,6 +66,22 @@ Message.belongsTo(User, { foreignKey: 'recipient_id', as: 'recipient' });
 User.hasMany(AuditLog, { foreignKey: 'actor_id', as: 'auditLogs' });
 AuditLog.belongsTo(User, { foreignKey: 'actor_id', as: 'actor' });
 
+// Project <-> ProjectReview
+Project.hasMany(ProjectReview, { foreignKey: 'project_id', as: 'reviews' });
+ProjectReview.belongsTo(Project, { foreignKey: 'project_id', as: 'project' });
+
+// User <-> ProjectReview (reviewer)
+User.hasMany(ProjectReview, { foreignKey: 'reviewer_id', as: 'projectReviews' });
+ProjectReview.belongsTo(User, { foreignKey: 'reviewer_id', as: 'reviewer' });
+
+// User <-> AcademicHistory
+User.hasMany(AcademicHistory, { foreignKey: 'user_id', as: 'academicHistory' });
+AcademicHistory.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
+// User <-> Certification
+User.hasMany(Certification, { foreignKey: 'user_id', as: 'certifications' });
+Certification.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
 module.exports = {
   User,
   Organization,
@@ -69,5 +93,9 @@ module.exports = {
   Milestone,
   Message,
   AuditLog,
-  UserPreferences
+  UserPreferences,
+  ProjectReview,
+  AcademicHistory,
+  Certification,
+  sequelize
 };

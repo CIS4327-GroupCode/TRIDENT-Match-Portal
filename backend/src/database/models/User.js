@@ -78,6 +78,14 @@ User.init(
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: null
+    },
+    org_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'organizations',
+        key: 'id'
+      }
     }
   },
   {

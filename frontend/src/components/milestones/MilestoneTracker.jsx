@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../../auth/AuthContext';
 import MilestoneForm from './MilestoneForm';
 
 const MilestoneTracker = ({ projectId }) => {
+  const { token } = useAuth();
   const [milestones, setMilestones] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +20,6 @@ const MilestoneTracker = ({ projectId }) => {
   const fetchMilestones = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
       let url = `http://localhost:4000/api/projects/${projectId}/milestones`;
       
       if (filter !== 'all') {
@@ -48,7 +49,6 @@ const MilestoneTracker = ({ projectId }) => {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(
         `http://localhost:4000/api/projects/${projectId}/milestones/stats`,
         {
@@ -69,7 +69,6 @@ const MilestoneTracker = ({ projectId }) => {
     if (!confirm('Are you sure you want to delete this milestone?')) return;
 
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(
         `http://localhost:4000/api/projects/${projectId}/milestones/${milestoneId}`,
         {
@@ -90,7 +89,6 @@ const MilestoneTracker = ({ projectId }) => {
 
   const updateStatus = async (milestoneId, newStatus) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(
         `http://localhost:4000/api/projects/${projectId}/milestones/${milestoneId}`,
         {

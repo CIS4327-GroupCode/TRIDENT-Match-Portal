@@ -33,6 +33,9 @@ router.get('/:id', authenticate, requireNonprofit, projectController.getProject)
 // Update a project
 router.put('/:id', authenticate, requireNonprofit, projectController.updateProject);
 
+// Submit project for review
+router.post('/:id/submit-for-review', authenticate, requireNonprofit, projectController.submitForReview);
+
 // Delete a project
 router.delete('/:id', authenticate, requireNonprofit, projectController.deleteProject);
 

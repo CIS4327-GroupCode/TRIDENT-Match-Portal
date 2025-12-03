@@ -21,8 +21,15 @@ router.delete('/users/:id/permanent', adminController.permanentlyDeleteUser);
 
 // Project Management
 router.get('/projects', adminController.getAllProjects);
+router.get('/projects/pending', adminController.getPendingProjects);
+router.get('/projects/:id', adminController.getProjectById);
 router.put('/projects/:id/status', adminController.updateProjectStatus);
 router.delete('/projects/:id', adminController.deleteProject);
+
+// Project Moderation (UC10)
+router.post('/projects/:id/approve', adminController.approveProject);
+router.post('/projects/:id/reject', adminController.rejectProject);
+router.post('/projects/:id/request-changes', adminController.requestProjectChanges);
 
 // Milestone Management
 router.get('/milestones', adminController.getAllMilestones);

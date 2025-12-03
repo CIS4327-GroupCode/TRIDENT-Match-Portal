@@ -76,9 +76,40 @@ export default function ProjectList({ onEdit, onRefresh }) {
     }
   };
 
+  const handleSubmitForReview = async (projectId) => {
+    if (!confirm("Submit this project for admin review?")) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("trident_token");
+      const response = await fetch(`/api/projects/${projectId}/submit-for-review`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to submit for review");
+      }
+
+      alert(data.message);
+      fetchProjects(); // Refresh list
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
   const getStatusBadge = (status) => {
     const badges = {
       draft: "secondary",
+      pending_review: "warning",
+      approved: "success",
+      needs_revision: "danger",
+      rejected: "dark",
       open: "success",
       in_progress: "primary",
       completed: "info",
@@ -130,6 +161,10 @@ export default function ProjectList({ onEdit, onRefresh }) {
           >
             <option value="">All Projects</option>
             <option value="draft">Draft</option>
+            <option value="pending_review">Pending Review</option>
+            <option value="approved">Approved</option>
+            <option value="needs_revision">Needs Revision</option>
+            <option value="rejected">Rejected</option>
             <option value="open">Open</option>
             <option value="in_progress">In Progress</option>
             <option value="completed">Completed</option>
@@ -204,6 +239,15 @@ export default function ProjectList({ onEdit, onRefresh }) {
                 </div>
 
                 <div className="card-footer bg-transparent">
+                  {(project.status === 'draft' || project.status === 'needs_revision') && (
+                    <button
+                      className="btn btn-sm btn-success w-100 mb-2"
+                      onClick={() => handleSubmitForReview(project.project_id)}
+                    >
+                      <i className="bi bi-send me-1"></i>
+                      Submit for Review
+                    </button>
+                  )}
                   <div className="d-flex gap-2">
                     <button
                       className="btn btn-sm btn-outline-secondary flex-grow-1"
@@ -215,6 +259,7 @@ export default function ProjectList({ onEdit, onRefresh }) {
                     <button
                       className="btn btn-sm btn-outline-primary"
                       onClick={() => onEdit && onEdit(project.project_id)}
+                      disabled={project.status === 'pending_review'}
                     >
                       <i className="bi bi-pencil me-1"></i>
                       Edit
@@ -222,7 +267,7 @@ export default function ProjectList({ onEdit, onRefresh }) {
                     <button
                       className="btn btn-sm btn-outline-danger"
                       onClick={() => handleDelete(project.project_id)}
-                      disabled={deletingId === project.project_id}
+                      disabled={deletingId === project.project_id || project.status === 'pending_review'}
                     >
                       {deletingId === project.project_id ? (
                         <span className="spinner-border spinner-border-sm" role="status"></span>

@@ -20,7 +20,7 @@ const getUserProfile = async (req, res) => {
         {
           model: Organization,
           as: 'organization',
-          attributes: ['id', 'name', 'type', 'location', 'website', 'mission', 'focus_areas']
+          attributes: ['id', 'name', 'mission', 'focus_tags', 'EIN', 'contacts']
         },
         {
           model: ResearcherProfile,
