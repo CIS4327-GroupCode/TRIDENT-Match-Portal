@@ -1,0 +1,113 @@
+Issue Type,Summary,Description,Epic Name,Priority,Story Points,Sprint,Status,Assignee,Labels
+Epic,Authentication & User Management,User registration login and profile management system,,,,,New,,authentication
+Story,"As a user, I want to register with email and password so that I can access the platform",,Authentication & User Management,P1,5,Sprint 1,Done,,authentication
+Story,"As a user, I want to log in securely so that I can access my account",,Authentication & User Management,P1,5,Sprint 1,Done,,authentication
+Story,"As a researcher, I want to create my professional profile during signup so that nonprofits can find me",,Authentication & User Management,P1,8,Sprint 1,Done,,authentication
+Story,"As a nonprofit, I want to create my organization profile during signup so that researchers know about us",,Authentication & User Management,P1,8,Sprint 1,Done,,authentication
+Story,"As a user, I want to verify my email address so that my account is secure",,Authentication & User Management,P1,8,Sprint 6,Planned,,authentication email-verification
+Story,"As a user, I want to enable multi-factor authentication so that my account is protected",,Authentication & User Management,P2,13,Sprint 7,Planned,,authentication security mfa
+Story,"As a user, I want to log in with Google or Microsoft so that I don't need another password",,Authentication & User Management,P2,8,,Backlog,,authentication oauth
+Story,"As a user, I want to update my profile information so that it stays current",,Authentication & User Management,P1,5,Sprint 2,Done,,profile
+Story,"As a user, I want to change my password so that I can keep my account secure",,Authentication & User Management,P1,3,Sprint 2,Done,,profile security
+Story,"As a user, I want to manage notification preferences so that I control what emails I receive",,Authentication & User Management,P2,3,Sprint 2,Done,,profile notifications
+Story,"As a nonprofit, I want to update my organization details so that researchers have accurate information",,Authentication & User Management,P1,5,Sprint 2,Done,,profile nonprofit
+Story,"As a researcher, I want to update my professional profile so that nonprofits see my latest skills",,Authentication & User Management,P1,5,Sprint 2,Done,,profile researcher
+Story,"As a researcher, I want to add my academic history so that nonprofits see my qualifications",,Authentication & User Management,P2,5,Sprint 5,Done,,profile researcher credentials
+Story,"As a researcher, I want to add my certifications so that nonprofits trust my expertise",,Authentication & User Management,P2,5,Sprint 5,Done,,profile researcher credentials
+Story,"As a user, I want to delete my account so that I can leave the platform if needed",,Authentication & User Management,P2,3,Sprint 2,Done,,profile
+Epic,Project Management,Project brief creation editing and milestone tracking system,,,,,New,,projects
+Story,"As a nonprofit, I want to create project briefs so that researchers can find opportunities",,Project Management,P1,8,Sprint 3,Done,,projects nonprofit
+Story,"As a nonprofit, I want to edit my project briefs so that I can update requirements",,Project Management,P1,5,Sprint 3,Done,,projects nonprofit
+Story,"As a nonprofit, I want to delete draft projects so that I can remove unwanted ideas",,Project Management,P1,3,Sprint 3,Done,,projects nonprofit
+Story,"As a nonprofit, I want to set project status to control visibility",,Project Management,P1,3,Sprint 3,Done,,projects nonprofit
+Story,"As a nonprofit, I want to add budget information so that researchers know the compensation",,Project Management,P1,2,Sprint 3,Done,,projects nonprofit
+Story,"As a nonprofit, I want to specify required methods so that I get qualified researchers",,Project Management,P1,2,Sprint 3,Done,,projects nonprofit
+Story,"As a nonprofit, I want to set data sensitivity levels so that researchers know the requirements",,Project Management,P1,2,Sprint 3,Done,,projects nonprofit
+Story,"As a nonprofit, I want to break projects into milestones so that I can track progress",,Project Management,P1,8,Sprint 3,Done,,projects milestones
+Story,"As a nonprofit, I want to create milestones with due dates so that work stays on schedule",,Project Management,P1,5,Sprint 3,Done,,projects milestones
+Story,"As a nonprofit, I want to update milestone status so that everyone sees progress",,Project Management,P1,3,Sprint 3,Done,,projects milestones
+Story,"As a nonprofit, I want to mark milestones complete so that we track achievements",,Project Management,P1,3,Sprint 3,Done,,projects milestones
+Story,"As a nonprofit, I want to see overdue milestones so that I can take action",,Project Management,P2,3,Sprint 3,Done,,projects milestones
+Story,"As a nonprofit, I want to see milestone completion rates so that I know project health",,Project Management,P2,3,Sprint 3,Done,,projects milestones
+Story,"As a nonprofit, I want to delete milestones that are no longer needed",,Project Management,P2,2,Sprint 3,Done,,projects milestones
+Epic,Discovery & Browsing,Public project browsing and search functionality,,,,,New,,discovery
+Story,"As a researcher, I want to browse projects without logging in so that I can explore opportunities",,Discovery & Browsing,P1,8,Sprint 4,Done,,discovery public
+Story,"As a researcher, I want to search projects by keywords so that I find relevant work",,Discovery & Browsing,P1,5,Sprint 4,Done,,discovery search
+Story,"As a researcher, I want to filter projects by domain so that I find my specialty",,Discovery & Browsing,P1,3,Sprint 4,Done,,discovery filtering
+Story,"As a researcher, I want to filter projects by methods so that I find work I can do",,Discovery & Browsing,P1,3,Sprint 4,Done,,discovery filtering
+Story,"As a researcher, I want to filter projects by budget so that I find paid opportunities",,Discovery & Browsing,P1,3,Sprint 4,Done,,discovery filtering
+Story,"As a researcher, I want to see project details publicly so that I can decide if I'm interested",,Discovery & Browsing,P1,5,Sprint 4,Done,,discovery public
+Story,"As a researcher, I want to see organization information so that I know who I'd work with",,Discovery & Browsing,P1,3,Sprint 4,Done,,discovery organizations
+Story,"As a researcher, I want to see project timelines so that I can plan my schedule",,Discovery & Browsing,P2,2,Sprint 4,Done,,discovery
+Epic,Matching System,Intelligent matching between researchers and projects,,,,,New,,matching
+Story,"As a researcher, I want to see suggested project matches so that I find relevant opportunities",,Matching System,P1,13,Sprint 9,Planned,,matching algorithm
+Story,"As a researcher, I want to see match scores so that I know how well I fit",,Matching System,P1,5,Sprint 9,Planned,,matching algorithm
+Story,"As a researcher, I want to accept or reject matches so that I control what I pursue",,Matching System,P1,5,Sprint 9,Planned,,matching
+Story,"As a researcher, I want to see why I was matched so that I understand the algorithm",,Matching System,P2,5,Sprint 9,Planned,,matching algorithm
+Story,"As a nonprofit, I want to see suggested researcher matches so that I find qualified talent",,Matching System,P1,13,Sprint 10,Planned,,matching algorithm nonprofit
+Story,"As a nonprofit, I want to see researcher profiles so that I can evaluate candidates",,Matching System,P1,5,Sprint 10,Planned,,matching nonprofit
+Story,"As a nonprofit, I want to invite researchers to projects so that I can recruit them",,Matching System,P1,8,Sprint 10,Planned,,matching nonprofit invitations
+Story,"As a nonprofit, I want to see researcher availability so that I know when they can start",,Matching System,P2,3,Sprint 10,Planned,,matching
+Story,"As a nonprofit, I want to see researcher rates so that I can budget appropriately",,Matching System,P2,2,Sprint 10,Planned,,matching
+Story,"As an admin, I want to configure matching weights so that results improve over time",,Matching System,P2,8,Sprint 10,Planned,,matching admin algorithm
+Story,"As an admin, I want to see matching algorithm performance so that I can optimize it",,Matching System,P2,5,Sprint 10,Planned,,matching admin analytics
+Epic,Agreements & Collaboration,Electronic agreement creation signing and management,,,,,New,,agreements
+Story,"As a nonprofit, I want to send agreement offers to researchers so that we can formalize collaboration",,Agreements & Collaboration,P1,8,Sprint 13,Planned,,agreements nonprofit
+Story,"As a researcher, I want to review agreement terms so that I understand the commitment",,Agreements & Collaboration,P1,5,Sprint 13,Planned,,agreements researcher
+Story,"As a researcher, I want to sign agreements electronically so that we can start work quickly",,Agreements & Collaboration,P1,13,Sprint 14,Planned,,agreements e-signature researcher
+Story,"As a nonprofit, I want to sign agreements electronically so that we can start work quickly",,Agreements & Collaboration,P1,13,Sprint 14,Planned,,agreements e-signature nonprofit
+Story,"As a user, I want to see all my agreements so that I track my commitments",,Agreements & Collaboration,P1,5,Sprint 13,Planned,,agreements
+Story,"As a user, I want to download signed agreements so that I have records",,Agreements & Collaboration,P2,3,Sprint 14,Planned,,agreements
+Story,"As a user, I want to terminate agreements if needed so that I can exit collaborations",,Agreements & Collaboration,P2,5,Sprint 14,Planned,,agreements
+Story,"As a user, I want agreement templates for NDAs so that I protect sensitive information",,Agreements & Collaboration,P1,5,Sprint 13,Planned,,agreements templates
+Story,"As a user, I want agreement templates for DUAs so that I comply with data regulations",,Agreements & Collaboration,P1,5,Sprint 13,Planned,,agreements templates
+Epic,Messaging & Communication,Real-time messaging system with file attachments,,,,,New,,messaging
+Story,"As a user, I want to send messages to other users so that I can communicate",,Messaging & Communication,P1,13,Sprint 11,Planned,,messaging real-time
+Story,"As a user, I want to receive messages from other users so that we can collaborate",,Messaging & Communication,P1,8,Sprint 11,Planned,,messaging real-time
+Story,"As a user, I want to see unread message counts so that I don't miss important messages",,Messaging & Communication,P1,5,Sprint 11,Planned,,messaging notifications
+Story,"As a user, I want to mark messages as read so that I can track what I've seen",,Messaging & Communication,P2,3,Sprint 11,Planned,,messaging
+Story,"As a user, I want to see message history so that I can review conversations",,Messaging & Communication,P1,5,Sprint 11,Planned,,messaging
+Story,"As a user, I want to delete messages so that I can clean up my inbox",,Messaging & Communication,P2,3,Sprint 11,Planned,,messaging
+Story,"As a user, I want real-time message notifications so that I respond quickly",,Messaging & Communication,P1,8,Sprint 11,Planned,,messaging real-time notifications
+Story,"As a user, I want to attach files to messages so that I can share documents",,Messaging & Communication,P1,13,Sprint 12,Planned,,messaging files
+Story,"As a user, I want to search my messages so that I can find information",,Messaging & Communication,P2,5,Sprint 12,Planned,,messaging search
+Epic,File Management,File upload download and storage management,,,,,New,,files
+Story,"As a nonprofit, I want to upload project documents so that researchers have context",,File Management,P1,8,Sprint 12,Planned,,files nonprofit
+Story,"As a researcher, I want to upload deliverables so that nonprofits can review my work",,File Management,P1,8,Sprint 12,Planned,,files researcher
+Story,"As a user, I want to download files so that I can work offline",,File Management,P1,3,Sprint 12,Planned,,files
+Story,"As a user, I want to see file upload progress so that I know when it's complete",,File Management,P2,3,Sprint 12,Planned,,files ui
+Story,"As a user, I want to delete files I uploaded so that I can remove outdated documents",,File Management,P2,3,Sprint 12,Planned,,files
+Story,"As an admin, I want to set file size limits so that we control storage costs",,File Management,P1,5,Sprint 12,Planned,,files admin
+Story,"As an admin, I want to scan files for viruses so that the platform stays secure",,File Management,P1,8,Sprint 12,Planned,,files security admin
+Story,"As a user, I want to organize files in folders so that I can stay organized",,File Management,P3,5,,Backlog,,files organization
+Epic,Reviews & Ratings,Post-project review and rating system,,,,,New,,reviews
+Story,"As a nonprofit, I want to rate researchers after projects so that others know their quality",,Reviews & Ratings,P1,8,Sprint 15,Planned,,reviews ratings nonprofit
+Story,"As a researcher, I want to rate nonprofits after projects so that others know their reputation",,Reviews & Ratings,P1,8,Sprint 15,Planned,,reviews ratings researcher
+Story,"As a user, I want to write detailed reviews so that I can provide helpful feedback",,Reviews & Ratings,P1,5,Sprint 15,Planned,,reviews
+Story,"As a user, I want to see reviews before collaborating so that I make informed decisions",,Reviews & Ratings,P1,5,Sprint 15,Planned,,reviews
+Story,"As a user, I want to see average ratings so that I can quickly assess reputation",,Reviews & Ratings,P1,3,Sprint 15,Planned,,reviews ratings
+Story,"As a user, I want to respond to reviews so that I can provide context",,Reviews & Ratings,P2,5,Sprint 15,Planned,,reviews
+Story,"As an admin, I want to moderate reviews so that we maintain quality standards",,Reviews & Ratings,P2,5,Sprint 15,Planned,,reviews admin moderation
+Epic,Admin Dashboard & Moderation,Administrative oversight and content moderation,,,,,New,,admin
+Story,"As an admin, I want to see platform statistics so that I understand usage",,Admin Dashboard & Moderation,P1,5,Sprint 4,Done,,admin dashboard analytics
+Story,"As an admin, I want to view all users so that I can manage accounts",,Admin Dashboard & Moderation,P1,5,Sprint 4,Done,,admin users
+Story,"As an admin, I want to suspend user accounts so that I can handle violations",,Admin Dashboard & Moderation,P1,5,Sprint 4,Done,,admin users moderation
+Story,"As an admin, I want to approve pending users so that we control quality",,Admin Dashboard & Moderation,P2,5,Sprint 4,Done,,admin users moderation
+Story,"As an admin, I want to delete users permanently so that I can remove bad actors",,Admin Dashboard & Moderation,P1,5,Sprint 4,Done,,admin users moderation
+Story,"As an admin, I want to view all projects so that I can monitor content",,Admin Dashboard & Moderation,P1,5,Sprint 4,Done,,admin projects
+Story,"As an admin, I want to approve project briefs so that we maintain quality",,Admin Dashboard & Moderation,P1,8,Sprint 8,Planned,,admin projects moderation
+Story,"As an admin, I want to reject project briefs with feedback so that nonprofits improve them",,Admin Dashboard & Moderation,P1,8,Sprint 8,Planned,,admin projects moderation
+Story,"As an admin, I want to request changes to projects so that they meet standards",,Admin Dashboard & Moderation,P1,8,Sprint 8,Planned,,admin projects moderation
+Story,"As an admin, I want to view all organizations so that I can verify legitimacy",,Admin Dashboard & Moderation,P1,5,Sprint 4,Done,,admin organizations
+Story,"As an admin, I want to view all milestones so that I can track platform progress",,Admin Dashboard & Moderation,P2,3,Sprint 4,Done,,admin milestones
+Story,"As an admin, I want to view audit logs so that I can track system changes",,Admin Dashboard & Moderation,P2,8,,Backlog,,admin security audit
+Story,"As an admin, I want to see pending approvals so that I can process them quickly",,Admin Dashboard & Moderation,P1,3,Sprint 4,Done,,admin dashboard
+Story,"As an admin, I want to see suspended accounts so that I can review them",,Admin Dashboard & Moderation,P2,3,Sprint 4,Done,,admin users
+Epic,System Administration,System monitoring SLA tracking and platform configuration,,,,,New,,admin system
+Story,"As an admin, I want to monitor SLA compliance so that we meet service standards",,System Administration,P1,13,Sprint 16,Planned,,admin sla monitoring
+Story,"As an admin, I want to see system health metrics so that I can prevent outages",,System Administration,P1,8,Sprint 16,Planned,,admin monitoring health
+Story,"As an admin, I want to configure email templates so that communications are consistent",,System Administration,P2,5,,Backlog,,admin email configuration
+Story,"As an admin, I want to manage platform settings so that I can control behavior",,System Administration,P2,8,,Backlog,,admin configuration
+Story,"As an admin, I want to run database backups so that we don't lose data",,System Administration,P1,8,Sprint 18,Planned,,admin database backup
+Story,"As an admin, I want to view error logs so that I can troubleshoot issues",,System Administration,P1,5,Sprint 16,Planned,,admin monitoring errors
+Story,"As an admin, I want to generate usage reports so that stakeholders have insights",,System Administration,P2,8,Sprint 16,Planned,,admin analytics reporting

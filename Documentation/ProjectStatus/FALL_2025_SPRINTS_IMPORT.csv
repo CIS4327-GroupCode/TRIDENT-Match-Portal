@@ -1,0 +1,74 @@
+Issue Type,Summary,Description,Epic Link,Priority,Story Points,Labels
+Epic,Project Briefs & Milestones,Enable project creation and milestone tracking for nonprofits,,High,,projects
+Story,CODE-UC4: Create Project model,Define Project schema with all required fields,Project Briefs & Milestones,High,3,models
+Story,CODE-UC7: Create Milestone model,Define Milestone schema with status tracking,Project Briefs & Milestones,High,2,models
+Story,DB-UC4: Create project_ideas migration,Database migration for projects table,Project Briefs & Milestones,High,2,database-migration
+Story,DB-UC7: Create milestones migration,Database migration for milestones table,Project Briefs & Milestones,High,2,database-migration
+Story,CODE-UC4: Implement POST /projects endpoint,Create new project brief,Project Briefs & Milestones,High,3,api
+Story,CODE-UC4: Implement GET /projects endpoint,List all projects for current organization,Project Briefs & Milestones,High,3,api
+Story,CODE-UC4: Implement GET /projects/:id endpoint,Get single project details,Project Briefs & Milestones,High,2,api
+Story,CODE-UC4: Implement PUT /projects/:id endpoint,Update project details,Project Briefs & Milestones,High,3,api
+Story,CODE-UC4: Implement DELETE /projects/:id endpoint,Soft delete project,Project Briefs & Milestones,Medium,2,api
+Story,CODE-UC7: Implement POST /projects/:projectId/milestones endpoint,Create milestone for project,Project Briefs & Milestones,High,3,api
+Story,CODE-UC7: Implement GET /projects/:projectId/milestones endpoint,List all milestones for project,Project Briefs & Milestones,High,2,api
+Story,CODE-UC7: Implement GET /projects/:projectId/milestones/stats endpoint,Get milestone completion statistics,Project Briefs & Milestones,Medium,3,api
+Story,CODE-UC7: Implement PUT /milestones/:id endpoint,Update milestone details and status,Project Briefs & Milestones,High,2,api
+Story,CODE-UC7: Implement DELETE /milestones/:id endpoint,Soft delete milestone,Project Briefs & Milestones,Medium,2,api
+Story,CODE-UC4: Create projectController with CRUD methods,Implement all project management methods,Project Briefs & Milestones,High,5,backend-controllers
+Story,CODE-UC7: Create milestoneController with CRUD methods,Implement all milestone management methods,Project Briefs & Milestones,High,5,backend-controllers
+Story,CODE-UC4: Add organization ownership validation,Verify user owns organization before project operations,Project Briefs & Milestones,High,2,security-authorization
+Story,CODE-UC4: Add nonprofit-only access control,Restrict project creation to nonprofit users only,Project Briefs & Milestones,High,2,security-authorization
+Story,CODE-UC7: Add milestone status ENUM validation,Validate milestone status values,Project Briefs & Milestones,Medium,1,validation
+Story,CODE-UC7: Add overdue detection logic,Calculate and flag overdue milestones,Project Briefs & Milestones,Medium,2,backend
+Story,CODE-UC7: Add days_until_due calculation,Calculate days remaining until milestone due date,Project Briefs & Milestones,Low,1,backend
+Story,CODE-UC7: Add completion rate calculation,Calculate percentage of completed milestones,Project Briefs & Milestones,Medium,2,backend
+Story,UI-UC4: Create ProjectForm component,Build project creation/editing form,Project Briefs & Milestones,High,5,frontend-components
+Story,UI-UC4: Create ProjectList component,Display projects with status badges,Project Briefs & Milestones,High,5,frontend-components
+Story,UI-UC7: Create MilestoneManager component,Build milestone management interface,Project Briefs & Milestones,High,5,frontend-components
+Story,UI-UC7: Create MilestoneCard component,Display individual milestone with status,Project Briefs & Milestones,Medium,3,frontend-components
+Story,UI-UC4: Add status filtering to project list,Filter projects by status (draft/open/in_progress/completed),Project Briefs & Milestones,Medium,2,frontend
+Story,UI-UC7: Add overdue warnings to milestones,Highlight overdue milestones visually,Project Briefs & Milestones,Medium,2,frontend-ui
+Story,UI-UC4: Add delete confirmation modals,Confirm before deleting projects or milestones,Project Briefs & Milestones,Low,2,frontend-ui
+Story,TEST-UC4: Write project brief integration tests,Test all project CRUD operations (30+ tests),Project Briefs & Milestones,High,8,testing
+Story,TEST-UC7: Write milestone integration tests,Test all milestone operations (40+ tests),Project Briefs & Milestones,High,10,testing
+Story,DOC-UC7: Create UC7 API documentation,Document milestone management API endpoints,Project Briefs & Milestones,Medium,2,documentation
+Story,DOC-UC4: Create UC4 API documentation,Document project brief API endpoints,Project Briefs & Milestones,Medium,2,documentation
+Epic,Public Discovery & Admin Oversight,Enable public project browsing and admin platform management,,High,,browse-admin
+Story,CODE-UC3: Implement GET /projects/browse endpoint,Public project browsing without authentication,Public Discovery & Admin Oversight,High,3,api-public
+Story,CODE-UC3: Implement GET /projects/:id/public endpoint,Public project detail view without authentication,Public Discovery & Admin Oversight,High,2,api-public
+Story,CODE-UC3: Add search functionality to browse,Search projects by title and description,Public Discovery & Admin Oversight,High,3,api-search
+Story,CODE-UC3: Add filter by domain,Filter projects by research domain,Public Discovery & Admin Oversight,Medium,2,api-filtering
+Story,CODE-UC3: Add filter by methods,Filter projects by research methods,Public Discovery & Admin Oversight,Medium,2,api-filtering
+Story,CODE-UC3: Add filter by budget range,Filter projects by budget range,Public Discovery & Admin Oversight,Medium,2,api-filtering
+Story,CODE-UC3: Add pagination to browse results,Paginate project list for performance,Public Discovery & Admin Oversight,Medium,2,api
+Story,UI-UC3: Create Browse page component,Build public project browsing interface,Public Discovery & Admin Oversight,High,5,frontend-pages
+Story,UI-UC3: Create ProjectCard component,Display project summary in card format,Public Discovery & Admin Oversight,High,3,frontend-components
+Story,UI-UC3: Create SearchBar component,Build search input with debouncing,Public Discovery & Admin Oversight,Medium,3,frontend-components
+Story,UI-UC3: Create FilterPanel component,Build filtering interface for browse page,Public Discovery & Admin Oversight,Medium,5,frontend-components
+Story,CODE-Admin: Implement GET /admin/dashboard/stats endpoint,Get platform statistics for admin dashboard,Public Discovery & Admin Oversight,High,3,api-admin
+Story,CODE-Admin: Implement GET /admin/users endpoint,List all users for admin management,Public Discovery & Admin Oversight,High,2,api-admin
+Story,CODE-Admin: Implement GET /admin/users/:id endpoint,Get detailed user information,Public Discovery & Admin Oversight,Medium,2,api-admin
+Story,CODE-Admin: Implement PUT /admin/users/:id/status endpoint,Update user account status,Public Discovery & Admin Oversight,High,2,api-admin
+Story,CODE-Admin: Implement POST /admin/users/:id/suspend endpoint,Suspend user account,Public Discovery & Admin Oversight,High,2,api-admin
+Story,CODE-Admin: Implement POST /admin/users/:id/unsuspend endpoint,Unsuspend user account,Public Discovery & Admin Oversight,Medium,2,api-admin
+Story,CODE-Admin: Implement DELETE /admin/users/:id/permanent endpoint,Permanently delete user account,Public Discovery & Admin Oversight,Medium,2,api-admin
+Story,CODE-Admin: Implement GET /admin/projects endpoint,List all projects for admin oversight,Public Discovery & Admin Oversight,High,2,api-admin
+Story,CODE-Admin: Implement GET /admin/projects/:id endpoint,Get detailed project information with organization and milestones,Public Discovery & Admin Oversight,Medium,3,api-admin
+Story,CODE-Admin: Implement GET /admin/milestones endpoint,List all milestones across platform,Public Discovery & Admin Oversight,Medium,2,api-admin
+Story,CODE-Admin: Implement GET /admin/organizations endpoint,List all organizations for admin oversight,Public Discovery & Admin Oversight,Medium,2,api-admin
+Story,CODE-Admin: Implement DELETE /admin/organizations/:id endpoint,Delete organization (admin only),Public Discovery & Admin Oversight,Low,2,api-admin
+Story,CODE-Admin: Create adminController with all methods,Implement all admin management methods,Public Discovery & Admin Oversight,High,8,backend-controllers
+Story,CODE-Admin: Create requireAdmin middleware,Verify user has admin role for protected admin routes,Public Discovery & Admin Oversight,High,2,middleware-authorization
+Story,UI-Admin: Create AdminDashboard page with 5 tabs,Build admin dashboard with tabbed navigation,Public Discovery & Admin Oversight,High,8,frontend-pages
+Story,UI-Admin: Create Overview tab with statistics,Display platform metrics and statistics,Public Discovery & Admin Oversight,Medium,5,frontend-components
+Story,UI-Admin: Create Users tab with user management,Build user management interface with actions,Public Discovery & Admin Oversight,High,5,frontend-components
+Story,UI-Admin: Create Projects tab with project list,Display all projects with admin actions,Public Discovery & Admin Oversight,High,5,frontend-components
+Story,UI-Admin: Create Milestones tab with milestone list,Display all milestones across platform,Public Discovery & Admin Oversight,Medium,3,frontend-components
+Story,UI-Admin: Create Organizations tab with org list,Display all organizations with management actions,Public Discovery & Admin Oversight,Medium,3,frontend-components
+Story,UI-Admin: Add user details modal,Show detailed user information in modal,Public Discovery & Admin Oversight,Medium,3,frontend-components
+Story,UI-Admin: Add project details modal,Show detailed project with organization and milestones in modal,Public Discovery & Admin Oversight,Medium,5,frontend-components
+Story,UI-Admin: Add organization details modal,Show detailed organization information in modal,Public Discovery & Admin Oversight,Low,3,frontend-components
+Story,UI-Admin: Add TopBar and Footer to admin dashboard,Consistent navigation for admin pages,Public Discovery & Admin Oversight,Low,2,frontend-ui
+Story,FIX-Admin: Fix admin route from /dashboard/admin to /admin,Correct admin dashboard routing,Public Discovery & Admin Oversight,High,1,frontend-routing
+Story,TEST-UC3: Write browse projects integration tests,Test public project browsing functionality,Public Discovery & Admin Oversight,Medium,5,testing
+Story,DOC-UC3: Create UC3 API documentation,Document public project browsing API endpoints,Public Discovery & Admin Oversight,Medium,2,documentation

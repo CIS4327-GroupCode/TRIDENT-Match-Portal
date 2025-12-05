@@ -1,0 +1,261 @@
+@startuml TRIDENT_Database_ERD
+
+!theme plain
+skinparam linetype ortho
+skinparam shadowing false
+skinparam entity {
+  BackgroundColor LightYellow
+  BorderColor Black
+  FontSize 11
+}
+
+' Legend
+legend top left
+  **TRIDENT Match Portal - Database ERD**
+  Version: 2.0
+  Date: December 4, 2025
+  Total Tables: 14
+  Total Relationships: 18
+endlegend
+
+' Core User Entity
+entity "_user" as user {
+  * **id** : INTEGER <<PK>>
+  --
+  * name : VARCHAR(255)
+  * email : VARCHAR(255) <<UNIQUE>>
+  * password_hash : VARCHAR(255)
+  * role : ENUM(researcher, nonprofit, admin)
+  * account_status : ENUM(active, pending, suspended)
+  * mfa_enabled : BOOLEAN
+  * created_at : TIMESTAMP
+  * updated_at : TIMESTAMP
+  deleted_at : TIMESTAMP
+  org_id : INTEGER <<FK>>
+}
+
+' Organization Entity
+entity "organizations" as org {
+  * **id** : INTEGER <<PK>>
+  --
+  * name : VARCHAR(255)
+  EIN : VARCHAR(255)
+  mission : VARCHAR(255)
+  focus_tags : VARCHAR(255)
+  compliance_flags : VARCHAR(255)
+  contacts : VARCHAR(255)
+}
+
+' Researcher Profile Entity
+entity "researcher_profiles" as researcher {
+  * **user_id** : INTEGER <<PK,FK>>
+  --
+  affiliation : VARCHAR(255)
+  domains : VARCHAR(255)
+  methods : VARCHAR(255)
+  tools : VARCHAR(255)
+  rate_min : DECIMAL(10,2)
+  rate_max : DECIMAL(10,2)
+  availability : VARCHAR(255)
+}
+
+' Project Entity
+entity "project_ideas" as project {
+  * **project_id** : INTEGER <<PK>>
+  --
+  * title : VARCHAR(255)
+  problem : VARCHAR(255)
+  outcomes : VARCHAR(255)
+  methods_required : VARCHAR(255)
+  timeline : VARCHAR(255)
+  budget_min : DECIMAL(10,2)
+  data_sensitivity : VARCHAR(255)
+  status : VARCHAR(255)
+  org_id : INTEGER <<FK>>
+}
+
+' Milestone Entity
+entity "milestones" as milestone {
+  * **id** : INTEGER <<PK>>
+  --
+  * project_id : INTEGER <<FK>>
+  * name : VARCHAR(255)
+  description : TEXT
+  * due_date : DATE
+  * status : ENUM(pending, in_progress, completed, cancelled)
+  completed_at : TIMESTAMP
+  * created_at : TIMESTAMP
+  * updated_at : TIMESTAMP
+}
+
+' Agreement Entity
+entity "agreements" as agreement {
+  * **id** : INTEGER <<PK>>
+  --
+  type : VARCHAR(255)
+  value : VARCHAR(255)
+  budget_info : VARCHAR(255)
+  audit_trail : VARCHAR(255)
+  org_id : INTEGER <<FK>>
+  researcher_id : INTEGER <<FK>>
+}
+
+' Match Entity
+entity "matches" as match {
+  * **id** : INTEGER <<PK>>
+  --
+  score : VARCHAR(255)
+  status : VARCHAR(255)
+  brief_id : INTEGER <<FK>>
+  researcher_id : INTEGER <<FK>>
+}
+
+' Rating Entity
+entity "ratings" as rating {
+  * **id** : INTEGER <<PK>>
+  --
+  from_party : VARCHAR(255)
+  scores : VARCHAR(255)
+  comments : VARCHAR(255)
+  project_id : INTEGER <<FK>>
+  rated_by_user_id : VARCHAR(255)
+}
+
+' Message Entity
+entity "messages" as message {
+  * **id** : INTEGER <<PK>>
+  --
+  content : VARCHAR(255)
+  timestamp : TIMESTAMP
+  read_status : VARCHAR(255)
+  sender_id : INTEGER <<FK>>
+  recipient_id : INTEGER <<FK>>
+}
+
+' Audit Log Entity
+entity "audit_logs" as audit {
+  * **id** : INTEGER <<PK>>
+  --
+  actor_id : INTEGER <<FK>>
+  action : VARCHAR(255)
+  entity_type : VARCHAR(255)
+  entity_id : INTEGER
+  timestamp : TIMESTAMP
+}
+
+' User Preferences Entity
+entity "user_preferences" as prefs {
+  * **id** : INTEGER <<PK>>
+  --
+  * user_id : INTEGER <<FK,UNIQUE>>
+  * email_notifications : BOOLEAN
+  * email_messages : BOOLEAN
+  * email_matches : BOOLEAN
+  * email_milestones : BOOLEAN
+  * email_agreements : BOOLEAN
+  * inapp_notifications : BOOLEAN
+  * inapp_messages : BOOLEAN
+  * inapp_matches : BOOLEAN
+  * inapp_milestones : BOOLEAN
+  * inapp_agreements : BOOLEAN
+  * created_at : TIMESTAMP
+  * updated_at : TIMESTAMP
+}
+
+' Project Review Entity
+entity "project_reviews" as review {
+  * **id** : INTEGER <<PK>>
+  --
+  * project_id : INTEGER <<FK>>
+  * reviewer_id : INTEGER <<FK>>
+  * status : VARCHAR(50)
+  feedback : TEXT
+  reviewed_at : TIMESTAMP
+  * created_at : TIMESTAMP
+  * updated_at : TIMESTAMP
+}
+
+' Academic History Entity
+entity "academic_history" as academic {
+  * **id** : INTEGER <<PK>>
+  --
+  * user_id : INTEGER <<FK>>
+  * degree : VARCHAR(255)
+  field : VARCHAR(255)
+  * institution : VARCHAR(255)
+  year : VARCHAR(50)
+  * created_at : TIMESTAMP
+  * updated_at : TIMESTAMP
+}
+
+' Certification Entity
+entity "certifications" as cert {
+  * **id** : INTEGER <<PK>>
+  --
+  * user_id : INTEGER <<FK>>
+  * name : VARCHAR(255)
+  * issuer : VARCHAR(255)
+  year : VARCHAR(50)
+  credential_id : VARCHAR(255)
+  * created_at : TIMESTAMP
+  * updated_at : TIMESTAMP
+}
+
+' Relationships - User centered
+user ||--o| researcher : "has profile\n(1:1)"
+user ||--|| prefs : "has preferences\n(1:1)"
+user ||--o{ academic : "has education\n(1:M)"
+user ||--o{ cert : "has certifications\n(1:M)"
+user }o--o| org : "belongs to\n(M:1)"
+user ||--o{ message : "sends\n(1:M)"
+user ||--o{ message : "receives\n(1:M)"
+user ||--o{ audit : "performs actions\n(1:M)"
+user ||--o{ review : "reviews projects\n(1:M)"
+
+' Relationships - Organization centered
+org ||--o{ user : "employs users\n(1:M)"
+org ||--o{ project : "owns projects\n(1:M)"
+org ||--o{ agreement : "signs agreements\n(1:M)"
+
+' Relationships - Researcher centered
+researcher ||--o{ match : "receives matches\n(1:M)"
+researcher ||--o{ agreement : "signs agreements\n(1:M)"
+
+' Relationships - Project centered
+project ||--o{ milestone : "has milestones\n(1:M)"
+project ||--o{ match : "generates matches\n(1:M)"
+project ||--o{ rating : "receives ratings\n(1:M)"
+project ||--o{ review : "reviewed by admin\n(1:M)"
+
+note right of user
+  **Soft Delete Enabled**
+  Uses paranoid mode
+  (deleted_at timestamp)
+end note
+
+note right of researcher
+  **Primary Key = Foreign Key**
+  user_id references _user.id
+  CASCADE on delete/update
+end note
+
+note bottom of project
+  **Status Values:**
+  draft, pending_review, approved,
+  published, in_progress,
+  completed, archived
+end note
+
+note bottom of milestone
+  **Status ENUM:**
+  pending, in_progress,
+  completed, cancelled
+end note
+
+note bottom of agreement
+  **Future Enhancement:**
+  Add e-signature fields
+  Add status workflow
+end note
+
+@enduml

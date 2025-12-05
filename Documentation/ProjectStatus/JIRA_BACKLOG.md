@@ -1,8 +1,10 @@
 # TRIDENT Match Portal - Jira Backlog
 
 **Project**: TRIDENT Match Portal  
-**Timeline**: November 2025 - May 2026  
-**Current Date**: December 2, 2025
+**Timeline**: Senior Project (Two-Term Sequence)  
+- **Fall 2025**: September - December 2025  
+- **Spring 2026**: January - May 2026  
+**Current Date**: December 3, 2025
 
 ---
 
@@ -134,631 +136,222 @@
 
 ## SPRINT BACKLOGS
 
-### COMPLETED SPRINTS (November 2025)
-
-#### Sprint 1: Foundation & Authentication (Nov 1-15, 2025) ✅ COMPLETE
-**Sprint Goal**: Establish core authentication and user management
-
-**Completed Tasks**:
-- Set up backend project structure with Express and Sequelize
-- Set up frontend project structure with React and Vite
-- Configure PostgreSQL database connection (Neon)
-- Create User model with Sequelize
-- Create Organization model
-- Create ResearcherProfile model
-- Implement user registration endpoint
-- Implement user login endpoint
-- Implement JWT token generation
-- Implement password hashing with bcrypt
-- Add email normalization and validation
-- Add account_status field to User model
-- Create authentication middleware
-- Create role-based authorization middleware
-- Create SignUpForm component with role selection
-- Create LoginForm component with error handling
-- Add organization profile fields to signup
-- Add researcher profile fields to signup
-- Implement auto-create Organization on nonprofit signup
-- Implement auto-create ResearcherProfile on researcher signup
-- Add AuthContext for global auth state
-- Add token storage in localStorage
-- Implement role-based redirects after login
-- Add Settings link to TopBar navigation
-- Create migration for account_status field
-- Add soft delete support (paranoid mode)
-- Write authentication integration tests
-- Write profile creation integration tests
-
-#### Sprint 2: Account Management (Nov 15-30, 2025) ✅ COMPLETE
-**Sprint Goal**: Complete user account settings and preferences
-
-**Completed Tasks**:
-- Create UserPreferences model
-- Create UserPreferences migration
-- Implement GET /users/me endpoint
-- Implement PUT /users/me endpoint
-- Implement PUT /users/me/password endpoint
-- Implement GET /users/me/preferences endpoint
-- Implement PUT /users/me/preferences endpoint
-- Implement DELETE /users/me endpoint (soft delete)
-- Implement GET /organizations/me endpoint
-- Implement PUT /organizations/me endpoint
-- Implement GET /researchers/me endpoint
-- Implement PUT /researchers/me endpoint
-- Create userController with all methods
-- Create organizationController
-- Create researcherController
-- Create Settings page with sidebar navigation
-- Create ProfileSettings component
-- Create PasswordSettings component with show/hide toggle
-- Create PreferencesSettings component with 11 preferences
-- Create OrganizationSettings component (nonprofit-only)
-- Create ResearcherSettings component (researcher-only)
-- Create DangerZone component with account deletion
-- Add email uniqueness validation
-- Add password strength validation
-- Add rate range validation for researchers
-- Write 25 account settings integration tests
-- Create UC6 API documentation
-
-#### Sprint 3: Projects & Milestones (Nov 20-30, 2025) ✅ COMPLETE
-**Sprint Goal**: Enable project brief creation and milestone tracking
-
-**Completed Tasks**:
-- Create Project model
-- Create Milestone model
-- Create project_ideas migration
-- Create milestones migration
-- Implement POST /projects endpoint
-- Implement GET /projects endpoint
-- Implement GET /projects/:id endpoint
-- Implement PUT /projects/:id endpoint
-- Implement DELETE /projects/:id endpoint
-- Implement POST /projects/:projectId/milestones endpoint
-- Implement GET /projects/:projectId/milestones endpoint
-- Implement GET /projects/:projectId/milestones/stats endpoint
-- Implement PUT /milestones/:id endpoint
-- Implement DELETE /milestones/:id endpoint
-- Create projectController with CRUD methods
-- Create milestoneController with CRUD methods
-- Add organization ownership validation
-- Add nonprofit-only access control
-- Add milestone status ENUM validation
-- Add overdue detection logic
-- Add days_until_due calculation
-- Add completion rate calculation
-- Create ProjectForm component
-- Create ProjectList component with status badges
-- Create MilestoneManager component
-- Create MilestoneCard component
-- Add status filtering to project list
-- Add overdue warnings to milestones
-- Add delete confirmation modals
-- Write 30+ project brief integration tests
-- Write 40+ milestone integration tests
-- Create UC7 API documentation
-- Create UC4 API documentation
-
-#### Sprint 4: Public Browse & Admin Dashboard (Nov 25 - Dec 1, 2025) ✅ COMPLETE
-**Sprint Goal**: Enable public project discovery and admin oversight
-
-**Completed Tasks**:
-- Implement GET /projects/browse endpoint (no auth)
-- Implement GET /projects/:id/public endpoint (no auth)
-- Add search functionality to browse
-- Add filter by domain
-- Add filter by methods
-- Add filter by budget range
-- Add pagination to browse results
-- Create Browse page component
-- Create ProjectCard component for public view
-- Create SearchBar component
-- Create FilterPanel component
-- Implement GET /admin/dashboard/stats endpoint
-- Implement GET /admin/users endpoint
-- Implement GET /admin/users/:id endpoint
-- Implement PUT /admin/users/:id/status endpoint
-- Implement POST /admin/users/:id/suspend endpoint
-- Implement POST /admin/users/:id/unsuspend endpoint
-- Implement DELETE /admin/users/:id/permanent endpoint
-- Implement GET /admin/projects endpoint
-- Implement GET /admin/milestones endpoint
-- Implement GET /admin/organizations endpoint
-- Implement DELETE /admin/organizations/:id endpoint
-- Create adminController with all methods
-- Create requireAdmin middleware
-- Create AdminDashboard page with 5 tabs
-- Create Overview tab with statistics
-- Create Users tab with user management
-- Create Projects tab with project list
-- Create Milestones tab with milestone list
-- Create Organizations tab with org list
-- Add user details modal
-- Add organization details modal
-- Add TopBar and Footer to admin dashboard
-- Fix admin route from /dashboard/admin to /admin
-- Write browse projects integration tests
-- Create UC3 API documentation
-
-#### Sprint 5: Academic Credentials (Dec 1-2, 2025) ✅ COMPLETE
-**Sprint Goal**: Add academic history and certifications for researchers
-
-**Completed Tasks**:
-- Create AcademicHistory model
-- Create Certification model
-- Create academic_history migration
-- Create certifications migration
-- Add User associations for academic history
-- Add User associations for certifications
-- Implement GET /researchers/me/academic endpoint
-- Implement POST /researchers/me/academic endpoint
-- Implement PUT /researchers/me/academic/:id endpoint
-- Implement DELETE /researchers/me/academic/:id endpoint
-- Implement GET /researchers/me/certifications endpoint
-- Implement POST /researchers/me/certifications endpoint
-- Implement PUT /researchers/me/certifications/:id endpoint
-- Implement DELETE /researchers/me/certifications/:id endpoint
-- Add ownership verification in controllers
-- Add validation for required fields
-- Update ProfileSection component to use backend APIs
-- Add loading states during data fetch
-- Add error handling with user feedback
-- Replace localStorage with API calls
-- Run database migration
-- Create academic certifications documentation
+**Note**: This project follows a two-term senior project course sequence. Sprints are one month each, aligned with academic calendar constraints (holidays, finals, breaks).
 
 ---
 
-### UPCOMING SPRINTS (December 2025 - May 2026)
+### FALL 2025 TERM (September - December 2025)
 
-#### Sprint 6: Email Verification & Security (Dec 2-13, 2025) ⏳ PLANNED
-**Sprint Goal**: Add email verification and enhanced security features
+#### Sprint 1: Foundation & Core Authentication (September 2025) ✅ COMPLETE
+**Sprint Goal**: Establish project foundation and basic authentication
 
-**Tasks**:
-- Set up email service provider (SendGrid or Mailgun)
-- Configure SMTP credentials in environment
-- Create email templates folder
-- Design verification email template
-- Design welcome email template
-- Design password reset email template
-- Implement POST /auth/send-verification endpoint
-- Implement GET /auth/verify-email/:token endpoint
-- Implement POST /auth/resend-verification endpoint
-- Add email_verified_at field to User model
-- Add verification_token field to User model
-- Add verification_token_expires_at field
-- Generate verification tokens on signup
-- Check email_verified before allowing login
-- Send verification email after registration
-- Create EmailVerification page component
-- Add "Resend verification" button
-- Add email verification status to profile
-- Implement rate limiting for auth endpoints
-- Add express-rate-limit package
-- Configure 5 requests/minute for auth
-- Configure 100 requests/minute for API
-- Add password strength requirements
-- Add password complexity validation (uppercase, number, special char)
-- Add email domain validation
-- Write email verification tests
-- Update UC1 documentation
+**Completed Work**:
+- Project setup (frontend, backend, database)
+- Database design and initial models (User, Organization, ResearcherProfile)
+- User registration and login (UC1)
+- JWT authentication middleware
+- Basic profile creation
+- SignUp and Login components
+- AuthContext for state management
 
-**Story Points**: 21
+**Deliverables**: Working authentication system, user can register and log in
 
-#### Sprint 7: Multi-Factor Authentication (Dec 16-27, 2025) ⏳ PLANNED
-**Sprint Goal**: Add MFA support for enhanced account security
+---
 
-**Tasks**:
-- Install speakeasy package for OTP generation
-- Install qrcode package for QR code generation
-- Add mfa_secret field to User model
-- Implement POST /users/me/mfa/enable endpoint
-- Implement POST /users/me/mfa/disable endpoint
-- Implement POST /users/me/mfa/verify endpoint
-- Implement POST /auth/mfa/verify endpoint during login
-- Generate TOTP secret on MFA enable
-- Generate QR code for authenticator apps
-- Verify TOTP code during login if MFA enabled
-- Store recovery codes encrypted
-- Create MFASetup component
-- Create MFAVerification component
-- Add MFA settings to account settings page
-- Show QR code for setup
-- Allow MFA disable with password verification
-- Show recovery codes after setup
-- Add MFA verification step to login flow
-- Test with Google Authenticator
-- Test with Microsoft Authenticator
-- Write MFA integration tests
-- Update security documentation
+#### Sprint 2: User Profiles & Settings (October 2025) ✅ COMPLETE
+**Sprint Goal**: Complete user account management (UC6)
 
-**Story Points**: 13
+**Completed Work**:
+- User profile CRUD operations
+- Password change functionality
+- User preferences (11 notification settings)
+- Organization profile management (nonprofit users)
+- Researcher profile management (researcher users)
+- Academic history and certifications (UC1.3)
+- Account deletion (soft delete)
+- Settings page with all sections
 
-#### Sprint 8: Project Moderation Workflow (Dec 30 - Jan 10, 2026) ⏳ PLANNED
-**Sprint Goal**: Complete UC10 admin project moderation
+**Deliverables**: Full account settings, users can manage all profile data
 
-**Tasks**:
-- Create ProjectReview model (already exists)
-- Add project_status field (pending_review, approved, rejected, changes_requested)
-- Implement GET /admin/projects/pending endpoint
-- Implement POST /admin/projects/:id/approve endpoint
-- Implement POST /admin/projects/:id/reject endpoint
-- Implement POST /admin/projects/:id/request-changes endpoint
-- Add validation for review feedback required on reject
-- Update project visibility based on approval status
-- Send notification to nonprofit on approval
-- Send notification to nonprofit on rejection
-- Send notification to nonprofit on changes requested
-- Log all moderation actions to audit_logs
-- Create PendingProjects component for admin
-- Create ProjectReviewModal component
-- Add approval/reject buttons to admin project list
-- Add feedback textarea for rejection
-- Add changes requested textarea
-- Show moderation history in project details
-- Allow nonprofits to resubmit after changes
-- Add auto-submit for review on project publish
-- Write project moderation tests
-- Create UC10 API documentation
+---
 
-**Story Points**: 21
+#### Sprint 3: Project Briefs & Milestones (November 2025) ✅ COMPLETE
+**Sprint Goal**: Enable project creation and tracking (UC4, UC7)
 
-#### Sprint 9: Matching Algorithm - Phase 1 (Jan 13-24, 2026) ⏳ PLANNED
-**Sprint Goal**: Build basic matching algorithm for researchers and projects
+**Completed Work**:
+- Project brief CRUD operations (UC4)
+- Milestone creation and management (UC7)
+- Project status workflow (draft, open, in_progress, completed)
+- Milestone status tracking (pending, in_progress, completed, cancelled)
+- Milestone statistics (completion rate, overdue detection)
+- ProjectForm and MilestoneTracker components
+- Nonprofit dashboard with project management
 
-**Tasks**:
-- Create Match model (already exists)
-- Add match scoring logic service
-- Implement domain matching (researcher domains vs project domains)
-- Implement method matching (researcher methods vs project methods)
-- Implement budget matching (researcher rate vs project budget)
-- Implement availability matching
-- Calculate composite match score (0-100)
-- Implement GET /researchers/me/matches endpoint
-- Implement GET /projects/:id/matches endpoint (nonprofit only)
-- Implement POST /matches/:id/accept endpoint
-- Implement POST /matches/:id/reject endpoint
-- Store match_score in matches table
-- Add match_status field (pending, accepted, rejected, expired)
-- Add matched_at timestamp
-- Add expires_at timestamp (30 days)
-- Create cron job to generate matches nightly
-- Create cron job to expire old matches
-- Create MatchList component for researchers
-- Create MatchCard component with score display
-- Show match explanation (why matched)
-- Add accept/reject buttons
-- Create NotificationService for match alerts
-- Send email on new matches (if preferences allow)
-- Write matching algorithm tests
-- Create UC8 API documentation
+**Deliverables**: Nonprofits can create and manage projects with milestones
 
-**Story Points**: 34
+---
 
-#### Sprint 10: Matching Algorithm - Phase 2 (Jan 27 - Feb 7, 2026) ⏳ PLANNED
-**Sprint Goal**: Complete nonprofit side matching and invitations
+#### Sprint 4: Public Discovery & Admin Oversight (December 2025) ✅ COMPLETE
+**Sprint Goal**: Public browsing and admin moderation (UC3, UC10 partial)
 
-**Tasks**:
-- Implement GET /organizations/me/matches endpoint
-- Add manual invite functionality
-- Implement POST /matches/invite endpoint (nonprofit to researcher)
-- Add invitation acceptance workflow
-- Show matched researchers to nonprofits
-- Create ResearcherMatchList component for nonprofits
-- Create ResearcherMatchCard with profile preview
-- Add invite button for nonprofits
-- Show invitation status (sent, accepted, declined)
-- Add filter matches by score threshold
-- Add filter matches by availability
-- Add filter matches by budget compatibility
-- Create match_invitations table for tracking
-- Log invitation events to audit_logs
-- Send notification to researcher on invite
-- Allow researcher to accept/decline invites
-- Update match status on invite acceptance
-- Create admin matching dashboard
-- Add matching algorithm configuration UI
-- Allow admin to adjust matching weights
-- Show matching algorithm performance metrics
-- A/B test different matching weights
-- Write invitation workflow tests
-- Create UC9 API documentation
+**Completed Work**:
+- Public project browsing (no auth required) (UC3)
+- Project search and filtering (domain, methods, budget)
+- Admin dashboard with statistics
+- User management (approve, suspend, delete)
+- Project management (view, delete, change status)
+- Organization and milestone oversight
+- Admin authentication and authorization
+- Project details modal for admins
 
-**Story Points**: 34
+**Deliverables**: Researchers can browse projects publicly, admins can manage platform
 
-#### Sprint 11: Real-Time Messaging - Phase 1 (Feb 10-21, 2026) ⏳ PLANNED
-**Sprint Goal**: Build messaging infrastructure and basic chat
+**Final Exams Period**: December 9-13, 2025 (No development work)
 
-**Tasks**:
-- Install socket.io package
-- Install socket.io-client package
-- Set up Socket.IO server
-- Configure CORS for WebSocket connections
-- Create message rooms (user-to-user)
-- Implement socket authentication with JWT
-- Implement POST /messages endpoint (REST fallback)
-- Implement GET /messages endpoint (fetch history)
-- Implement GET /messages/conversations endpoint
-- Mark messages as read
-- Implement DELETE /messages/:id endpoint
-- Add message_thread_id to messages table
-- Add message_type field (text, file, system)
-- Create socket event: 'send_message'
-- Create socket event: 'message_received'
-- Create socket event: 'typing_indicator'
-- Create socket event: 'mark_read'
-- Create Messages page component
-- Create ConversationList component
-- Create ChatWindow component
-- Create MessageBubble component
-- Show online/offline status
-- Show typing indicators
-- Show unread message counts
-- Auto-scroll to latest message
-- Add emoji picker
-- Store messages in database
-- Implement message pagination (load older)
-- Write messaging integration tests
-- Create UC2 API documentation
+---
 
-**Story Points**: 34
+### WINTER BREAK (December 14, 2025 - January 12, 2026)
+*No active development - Holiday break*
 
-#### Sprint 12: Real-Time Messaging - Phase 2 (Feb 24 - Mar 7, 2026) ⏳ PLANNED
-**Sprint Goal**: Add file attachments and advanced messaging features
+---
 
-**Tasks**:
-- Set up file storage service (AWS S3 or alternative)
-- Configure storage bucket and credentials
-- Implement file upload endpoint
-- Add file_url field to messages table
-- Add file_name field
-- Add file_size field
-- Add file_type field
-- Support image attachments
-- Support document attachments (PDF, Word)
-- Support code file attachments
-- Generate image thumbnails
-- Scan uploaded files for viruses
-- Implement file size limits (10MB per file)
-- Implement storage quota per user
-- Create FileUpload component
-- Show upload progress bar
-- Preview images inline in chat
-- Download button for documents
-- Show file metadata (name, size, type)
-- Add file search in messages
-- Add delete file functionality
-- Update storage usage in user profile
-- Notify when approaching storage limit
-- Implement message search
-- Add conversation archiving
-- Add conversation muting
-- Write file upload tests
-- Update UC2 documentation
-- Update UC13 documentation
+### SPRING 2026 TERM (January - May 2026)
 
-**Story Points**: 34
+#### Sprint 5: Project Moderation Workflow (January 13 - February 9, 2026) ⏳ PLANNED
+**Sprint Goal**: Complete admin project approval system (UC10)
 
-#### Sprint 13: Agreement Execution - Phase 1 (Mar 10-21, 2026) ⏳ PLANNED
-**Sprint Goal**: Build agreement workflow and templates
+**Planned Work**:
+- Project submission workflow (nonprofit submits for review)
+- Admin review interface (approve, reject, request changes)
+- ProjectReview model and history tracking
+- Email notifications to nonprofits on decision
+- Resubmission workflow for rejected projects
+- Pending review dashboard tab
+- Project moderation tests
 
-**Tasks**:
-- Create Agreement model updates (add status, type, terms)
-- Add agreement_template table
-- Create default NDA template
-- Create default DUA template
-- Create default collaboration agreement template
-- Implement POST /agreements endpoint (create agreement)
-- Implement GET /agreements endpoint (list user agreements)
-- Implement GET /agreements/:id endpoint
-- Implement PUT /agreements/:id endpoint
-- Implement DELETE /agreements/:id endpoint
-- Add agreement_status field (draft, sent, signed, active, terminated)
-- Add terms_text field (TEXT)
-- Add sent_at timestamp
-- Add signed_at timestamp
-- Add nonprofit_signature field
-- Add researcher_signature field
-- Add nonprofit_signed_at timestamp
-- Add researcher_signed_at timestamp
-- Create AgreementList component
-- Create AgreementDetail component
-- Create AgreementEditor component
-- Show agreement status badges
-- Allow customization of template
-- Save agreement as draft
-- Send agreement to counterparty
-- Notify counterparty of new agreement
-- Write agreement workflow tests
-- Create UC11 API documentation
+**Deliverables**: Complete UC10 - Admin can approve/reject project briefs
 
-**Story Points**: 34
+**Academic Constraint**: Spring semester starts January 13
 
-#### Sprint 14: Agreement Execution - Phase 2 (Mar 24 - Apr 4, 2026) ⏳ PLANNED
-**Sprint Goal**: Integrate e-signature service
+---
 
-**Tasks**:
-- Research e-signature providers (DocuSign, HelloSign, PandaDoc)
-- Create developer account with chosen provider
-- Configure API credentials
-- Install e-signature SDK
-- Implement DocuSign envelope creation
-- Implement DocuSign signing ceremony
-- Implement DocuSign webhook for signed status
-- Map DocuSign fields to our agreement fields
-- Store signed document URL
-- Download signed PDF
-- Send signed copy to both parties
-- Add signature verification
-- Add audit trail for signatures
-- Add IP address logging for signatures
-- Add timestamp for signatures
-- Create SignAgreement component
-- Embed DocuSign signing UI
-- Show signature status
-- Allow agreement withdrawal before signing
-- Notify when both parties signed
-- Mark agreement active when fully signed
-- Allow agreement termination with notice
-- Store termination reason
-- Write e-signature integration tests
-- Update UC11 documentation
+#### Sprint 6: Matching Algorithm & Researcher Dashboard (February 10 - March 9, 2026) ⏳ PLANNED
+**Sprint Goal**: Intelligent matching system (UC8, UC9 partial)
 
-**Story Points**: 34
+**Planned Work**:
+- Match model and scoring algorithm
+- Domain, method, and budget matching logic
+- Researcher match suggestions (UC8)
+- Match acceptance/rejection workflow
+- Researcher dashboard with match feed
+- Match explanation (why matched)
+- Basic matching tests
+- Nonprofit view of matched researchers (UC9 partial)
 
-#### Sprint 15: Reviews & Ratings (Apr 7-18, 2026) ⏳ PLANNED
-**Sprint Goal**: Implement post-project review system
+**Deliverables**: Researchers see project matches, can accept/reject
 
-**Tasks**:
-- Update Rating model with detailed fields
-- Add rating_dimensions field (JSON)
-- Add overall_score field (1-5)
-- Add communication_score field
-- Add quality_score field
-- Add timeliness_score field
-- Add professionalism_score field
-- Add would_work_again field (boolean)
-- Implement POST /ratings endpoint
-- Implement GET /ratings/received endpoint
-- Implement GET /ratings/given endpoint
-- Implement PUT /ratings/:id endpoint (author only)
-- Implement POST /ratings/:id/respond endpoint
-- Add review_response field
-- Add responded_at timestamp
-- Only allow rating after project completion
-- Prevent duplicate ratings for same project
-- Calculate average ratings for users
-- Add average_rating to User model
-- Add total_ratings_count to User model
-- Update ratings on new review
-- Create ReviewForm component
-- Create ReviewCard component
-- Create ReviewList component
-- Show star ratings visually
-- Show rating breakdown by dimension
-- Allow written review (optional)
-- Show reviewer name and date
-- Allow response to reviews
-- Display average rating in profiles
-- Show rating distribution histogram
-- Write review system tests
-- Create UC5 API documentation
+---
 
-**Story Points**: 34
+#### Sprint 7: Messaging System (March 10 - April 6, 2026) ⏳ PLANNED
+**Sprint Goal**: Enable user communication (UC2)
 
-#### Sprint 16: Admin Monitoring & SLA Tracking (Apr 21 - May 2, 2026) ⏳ PLANNED
-**Sprint Goal**: Build admin monitoring dashboard and SLA tracking
+**Planned Work**:
+- Real-time messaging with Socket.IO
+- Message model and conversation threads
+- Messages page with conversation list
+- Chat window component
+- Unread message counts
+- Typing indicators
+- Message history and pagination
+- Basic file attachments (images, documents)
+- Messaging tests
 
-**Tasks**:
-- Define SLA metrics (response time, uptime, match quality)
-- Create SLAMetric model
-- Add metric_name field
-- Add metric_value field
-- Add threshold_value field
-- Add measured_at timestamp
-- Add status field (ok, warning, critical)
-- Implement GET /admin/monitoring/sla endpoint
-- Implement GET /admin/monitoring/health endpoint
-- Implement GET /admin/monitoring/errors endpoint
-- Track response time for all API endpoints
-- Track uptime percentage
-- Track match acceptance rate
-- Track average time to match
-- Track project completion rate
-- Track user retention rate
-- Create cron job to calculate SLA metrics
-- Create cron job to check SLA thresholds
-- Send alert email on SLA violation
-- Create MonitoringDashboard component for admin
-- Create SLAMetrics component
-- Create HealthStatus component
-- Create ErrorLogs component
-- Show real-time metrics
-- Show historical trends (charts)
-- Add filter by time range
-- Add export metrics to CSV
-- Create incident response workflow
-- Log all SLA violations to audit_logs
-- Write monitoring tests
-- Create UC12 API documentation
+**Deliverables**: Users can send real-time messages and share files
 
-**Story Points**: 34
+**Academic Constraint**: Spring break typically mid-March (1 week)
 
-#### Sprint 17: Testing & Quality Assurance (May 5-16, 2026) ⏳ PLANNED
-**Sprint Goal**: Comprehensive testing and bug fixes
+---
 
-**Tasks**:
-- Fix all failing unit tests
-- Fix all failing integration tests
-- Update tests for schema changes
-- Add missing test coverage for new features
-- Achieve 80% code coverage target
-- Write E2E tests for complete user flows
-- Test registration → project creation → match → agreement flow
-- Test nonprofit complete workflow
-- Test researcher complete workflow
-- Test admin moderation workflow
-- Test messaging workflow
-- Test file upload workflow
-- Test e-signature workflow
-- Test review workflow
-- Perform security audit
-- Check for SQL injection vulnerabilities
-- Check for XSS vulnerabilities
-- Check for CSRF vulnerabilities
-- Check for authentication bypasses
-- Test rate limiting
-- Test input validation
-- Perform performance testing
-- Load test with 100 concurrent users
-- Load test with 1000 concurrent users
-- Optimize slow database queries
-- Add database indexes where needed
-- Optimize API response times
-- Fix all bugs found during testing
-- Document all known issues
-- Create bug fix prioritization list
+#### Sprint 8: Final Integration & Testing (April 7 - May 4, 2026) ⏳ PLANNED
+**Sprint Goal**: Polish, testing, and deployment preparation
 
-**Story Points**: 34
+**Planned Work**:
+- Bug fixes from previous sprints
+- Integration testing for complete user flows
+- Performance optimization
+- Security audit and fixes
+- UI/UX improvements
+- Admin monitoring dashboard enhancements
+- Production deployment setup
+- User documentation
+- Final presentation preparation
 
-#### Sprint 18: Deployment & Launch Preparation (May 19-30, 2026) ⏳ PLANNED
-**Sprint Goal**: Deploy to production and prepare for launch
+**Deliverables**: Production-ready system, complete documentation
 
-**Tasks**:
-- Set up production database (PostgreSQL)
-- Run all database migrations in production
-- Seed production database with initial data
-- Configure production environment variables
-- Set up production backend server
-- Set up production frontend hosting
-- Configure SSL/TLS certificates
-- Set up CDN for static assets
-- Configure Redis for caching
-- Configure Redis for session storage
-- Set up monitoring (New Relic, DataDog, or similar)
-- Set up error tracking (Sentry)
-- Set up log aggregation (LogRocket, Splunk)
-- Configure automated backups
-- Test backup restoration procedure
-- Set up CI/CD pipeline
-- Configure GitHub Actions or Jenkins
-- Add automated testing to pipeline
-- Add automated deployment to pipeline
-- Configure staging environment
-- Test deployment to staging
-- Perform smoke tests in staging
-- Test all critical user flows in production
-- Set up health check endpoints
-- Configure uptime monitoring
-- Create runbook for common issues
-- Train support team on platform
-- Create user documentation
-- Create admin documentation
-- Prepare launch announcement
-- Set up analytics tracking (Google Analytics)
-- Launch platform to users
+**Academic Constraint**: Final exams May 5-9, 2026
 
-**Story Points**: 34
+---
+
+#### Final Presentations: Week of May 5-9, 2026 🎓
+**Senior Project Presentation & Demo**
+
+---
+
+## FUTURE ENHANCEMENTS (Post-Graduation)
+
+### Backlog Items (Not in Senior Project Scope)
+
+**Authentication Enhancements**:
+- Email verification (UC1.1)
+- Multi-factor authentication (MFA)
+- OAuth (Google, Microsoft login)
+- Password reset via email
+
+**Advanced Features**:
+- Agreement execution and e-signatures (UC11)
+- Reviews and ratings system (UC5)
+- Advanced file management with folders
+- SLA monitoring and health metrics (UC12)
+- Audit logging system
+- Advanced matching with ML
+- Researcher invitations from nonprofits
+- Agreement templates (NDA, DUA)
+
+**Performance & Scale**:
+- Caching layer (Redis)
+- CDN for static assets
+- Database optimization
+- Load testing and monitoring
+- Advanced analytics dashboard
+
+---
+
+## SPRINT PLANNING NOTES
+
+### Sprint Capacity
+- **Duration**: 1 month per sprint
+- **Team Size**: 2-3 developers (senior project team)
+- **Academic Constraints**: 
+  - Finals weeks (no development)
+  - Spring break (reduced capacity)
+  - Class schedule (part-time development)
+- **Velocity**: 20-30 story points per sprint (accounting for classes)
+
+### Academic Calendar Alignment
+- **Fall 2025**: 4 sprints (Sept, Oct, Nov, Dec)
+- **Winter Break**: No development
+- **Spring 2026**: 4 sprints (Jan-Feb, Feb-Mar, Mar-Apr, Apr-May)
+- **Total Project Duration**: 8 months (active development in 8 sprints)
+
+### Definition of Done
+- Code reviewed and merged to main branch
+- Unit tests written and passing
+- Integration tests for API endpoints
+- Component tests for UI
+- Feature documented in README or API docs
+- Deployed to staging environment
+- Tested by team member (QA)
+- Acceptance criteria met
 
 ---
 
