@@ -3,15 +3,16 @@ import { useAuth } from '../auth/AuthContext'
 import Modal from './ui/Modal'
 import SignUpForm from './ui/SignUpForm'
 import LoginForm from './ui/LoginForm'
+// Import Link from react-router-dom to handle navigation to the profile/dashboard
+import { Link } from 'react-router-dom' 
 
 function UtilityNav(){
   return (
     <nav className="d-none d-md-flex gap-3">
+      <Link to="/" className="nav-link">Home</Link>
+      <Link to="/browse" className="nav-link">Browse Projects</Link>
       <a href="#about" className="nav-link">About</a>
       <a href="#how" className="nav-link">How it Works</a>
-      <a href="#pricing" className="nav-link">Pricing</a>
-      <a href="#faq" className="nav-link">FAQ</a>
-      <a href="#contact" className="nav-link">Contact</a>
     </nav>
   )
 }
@@ -22,31 +23,75 @@ export default function TopBar() {
   const [mode, setMode] = useState('signup') // 'signup' | 'login'
   const auth = useAuth()
 
+  // Determine the user's role for the Profile link
+  const userRole = auth.user?.role || 'user'; // Assuming 'role' is stored on the user object
+
   return (
     <header className="bg-white shadow-sm">
-  <div className="container d-flex align-items-center justify-content-between py-3">
+      <div className="container d-flex align-items-center justify-content-between py-3">
+        {/* LEFT SIDE: Stays the same */}
         <div className="d-flex align-items-center gap-3">
-          <div className="h5 mb-0">Trident</div>
+          <Link to="/" className="text-decoration-none text-dark">
+            <div className="h5 mb-0">Trident</div>
+          </Link>
           <UtilityNav />
         </div>
+
+        {/* RIGHT SIDE: Modified for Profile, Logout, and User Name */}
         <div className="d-flex align-items-center gap-2">
           {auth && auth.isAuthenticated ? (
-            <>
-              <span className="me-2 text-muted">Hi, {auth.user?.name || auth.user?.email}</span>
-              <button className="btn btn-outline-secondary btn-sm" onClick={() => auth.logout()}>Logout</button>
-            </>
-          ) : (
-            <button type="button" className="btn btn-link text-muted me-2" onClick={() => { setMode('login'); setOpen(true) }}>Sign In</button>
-          )}
+            // === LOGGED IN STATE ===
+            <div className="d-flex align-items-center gap-3">
+              
+              {/* 1. Display User Name */}
+              <span className="text-dark">
+                Hi, <strong className="fw-semibold">{auth.user?.name || auth.user?.email}</strong>
+              </span>
 
-          <div className="dropdown" id='signup-dropdown'>
-            <button className="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Sign Up</button>
-            <ul className="dropdown-menu dropdown-menu-end">
-                <li><button className="dropdown-item" onClick={() => { setRole('nonprofit'); setMode('signup'); setOpen(true) }}>Nonprofit</button></li>
-                <li><button className="dropdown-item" onClick={() => { setRole('researcher'); setMode('signup'); setOpen(true) }}>Researcher</button></li>
-              </ul>
-          </div>
-          
+              {/* 2. Dashboard Button/Link */}
+              <Link
+                to={userRole === 'admin' ? '/admin' : `/dashboard/${userRole}`}
+                className="btn btn-primary btn-sm"
+              >
+                Dashboard
+              </Link>
+
+              {/* 3. Settings Button/Link */}
+              <Link
+                to="/settings"
+                className="btn btn-outline-primary btn-sm"
+              >
+                Settings
+              </Link>
+
+              {/* 4. Logout Button */}
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={() => auth.logout()}
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            // === LOGGED OUT STATE (Existing functionality) ===
+            <>
+              <button 
+                type="button" 
+                className="btn btn-link text-muted me-2" 
+                onClick={() => { setMode('login'); setOpen(true) }}
+              >
+                Sign In
+              </button>
+
+              <div className="dropdown" id='signup-dropdown'>
+                <button className="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Sign Up</button>
+                <ul className="dropdown-menu dropdown-menu-end">
+                  <li><button className="dropdown-item" onClick={() => { setRole('nonprofit'); setMode('signup'); setOpen(true) }}>Nonprofit</button></li>
+                  <li><button className="dropdown-item" onClick={() => { setRole('researcher'); setMode('signup'); setOpen(true) }}>Researcher</button></li>
+                </ul>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
