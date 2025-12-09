@@ -7,12 +7,17 @@ import LoginForm from './ui/LoginForm'
 import { Link } from 'react-router-dom' 
 
 function UtilityNav(){
+        const { isAuthenticated } = useAuth();
   return (
     <nav className="d-none d-md-flex gap-3">
       <Link to="/" className="nav-link">Home</Link>
       <Link to="/browse" className="nav-link">Browse Projects</Link>
       <a href="#about" className="nav-link">About</a>
       <a href="#how" className="nav-link">How it Works</a>
+
+      {isAuthenticated && (
+      <Link to="/messages" className="nav-link">Messages</Link>
+)}
     </nav>
   )
 }

@@ -6,6 +6,7 @@ import Settings from './pages/Settings'
 import Browse from './pages/Browse'
 import AdminDashboard from './pages/AdminDashboard'
 import ProtectedRoute from './components/ProtectedRoute'
+import Messages from './pages/Messages'
 
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
                               } 
         />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/messages" element={<Messages />} />
       </Routes>
     
   )

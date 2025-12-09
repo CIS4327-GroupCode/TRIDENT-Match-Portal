@@ -44,6 +44,7 @@ const organizationRoutes = require('./routes/organizationRoutes');
 const researcherRoutes = require('./routes/researcherRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const projectRoutes = require('./routes/projectRoutes');
+const messageRoutes = require('./routes/messagesRoutes');
 
 // Mount routes with /api prefix for clarity
 app.use('/api/auth', authRoutes);
@@ -52,6 +53,7 @@ app.use('/api/organizations', organizationRoutes);
 app.use('/api/researchers', researcherRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/projects', projectRoutes);
+app.use('/api/messages', messageRoutes);
 
 // 404 handler for undefined routes
 app.use((req, res) => {
