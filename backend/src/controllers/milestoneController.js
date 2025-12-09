@@ -1,5 +1,6 @@
 const Milestone = require('../database/models/Milestone');
 const Project = require('../database/models/Project');
+const User = require('../database/models/User');   // ⬅️ add this
 const { Op } = require('sequelize');
 
 /**
@@ -27,9 +28,27 @@ exports.createMilestone = async (req, res) => {
     }
 
     // Check if user is the project owner (nonprofit organization)
-    if (req.user.role === 'nonprofit' && project.org_id !== req.user.organization_id) {
-      return res.status(403).json({ 
-        error: 'Access denied. You can only create milestones for your organization\'s projects' 
+    // Check if user is the project owner
+    // Check if user is the project owner (nonprofit organization)
+    const user = await User.findByPk(req.user.id);
+
+    if (!user || user.role !== 'nonprofit') {
+      return res.status(403).json({
+        error: 'Only nonprofit users can create milestones',
+      });
+    }
+
+    // Debug so you can see what’s being compared (optional)
+    console.log('Milestone create auth:', {
+      userId: user.id,
+      userOrgId: user.org_id,
+      projectOrgId: project.org_id,
+    });
+
+    if (project.org_id !== user.org_id) {
+      return res.status(403).json({
+        error:
+          "Access denied. You can only create milestones for your organization's projects",
       });
     }
 
@@ -198,20 +217,37 @@ exports.updateMilestone = async (req, res) => {
     }
 
     // Verify project ownership
-    const project = await Project.findOne({
-      where: { project_id: projectId }
-    });
+    // Verify project ownership
+const project = await Project.findOne({
+  where: { project_id: projectId },
+});
 
-    if (!project) {
-      return res.status(404).json({ error: 'Project not found' });
-    }
+if (!project) {
+  return res.status(404).json({ error: 'Project not found' });
+}
 
-    // Check if user is the project owner
-    if (req.user.role === 'nonprofit' && project.org_id !== req.user.organization_id) {
-      return res.status(403).json({ 
-        error: 'Access denied. You can only update milestones for your organization\'s projects' 
-      });
-    }
+// Load fresh user from DB
+const user = await User.findByPk(req.user.id);
+
+if (!user || user.role !== 'nonprofit') {
+  return res.status(403).json({
+    error: 'Only nonprofit users can update milestones',
+  });
+}
+
+// Debug (optional)
+console.log('Milestone update auth:', {
+  userId: user.id,
+  userOrgId: user.org_id,
+  projectOrgId: project.org_id,
+});
+
+if (project.org_id !== user.org_id) {
+  return res.status(403).json({
+    error:
+      "Access denied. You can only update milestones for your organization's projects",
+  });
+}
 
     // Validate status if provided
     const validStatuses = ['pending', 'in_progress', 'completed', 'cancelled'];
@@ -285,20 +321,37 @@ exports.deleteMilestone = async (req, res) => {
     }
 
     // Verify project ownership
-    const project = await Project.findOne({
-      where: { project_id: projectId }
-    });
+    // Verify project ownership
+const project = await Project.findOne({
+  where: { project_id: projectId },
+});
 
-    if (!project) {
-      return res.status(404).json({ error: 'Project not found' });
-    }
+if (!project) {
+  return res.status(404).json({ error: 'Project not found' });
+}
 
-    // Check if user is the project owner (only nonprofit can delete)
-    if (req.user.role === 'nonprofit' && project.org_id !== req.user.organization_id) {
-      return res.status(403).json({ 
-        error: 'Access denied. You can only delete milestones for your organization\'s projects' 
-      });
-    }
+// Load fresh user from DB
+const user = await User.findByPk(req.user.id);
+
+if (!user || user.role !== 'nonprofit') {
+  return res.status(403).json({
+    error: 'Only nonprofit users can delete milestones',
+  });
+}
+
+// Debug (optional)
+console.log('Milestone delete auth:', {
+  userId: user.id,
+  userOrgId: user.org_id,
+  projectOrgId: project.org_id,
+});
+
+if (project.org_id !== user.org_id) {
+  return res.status(403).json({
+    error:
+      "Access denied. You can only delete milestones for your organization's projects",
+  });
+}
 
     // Delete milestone
     await milestone.destroy();

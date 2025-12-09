@@ -30,18 +30,37 @@ export default function OrganizationSettings() {
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch organization");
       }
-
-      setOrganization(data.organization);
+  
+      // 👉 Support both shapes:
+      //    - { organization: {...} }
+      //    - {...} (plain org object)
+      let org = data.organization ?? data;
+  
+      // 👉 If still nothing, fall back to an empty org object
+      if (!org) {
+        org = {
+          name: "",
+          type: "",
+          location: "",
+          website: "",
+          mission: "",
+          focus_areas: [],
+          budget_range: "",
+          team_size: "",
+          established_year: "",
+        };
+      }
+  
+      setOrganization(org);
+  
       setFocusAreasInput(
-        Array.isArray(data.organization.focus_areas)
-          ? data.organization.focus_areas.join(", ")
-          : ""
+        Array.isArray(org.focus_areas) ? org.focus_areas.join(", ") : ""
       );
     } catch (err) {
       setError(err.message);
@@ -55,7 +74,7 @@ export default function OrganizationSettings() {
     setError(null);
     setSuccess(null);
     setSaving(true);
-
+  
     try {
       const token = localStorage.getItem("trident_token");
       const payload = {
@@ -65,7 +84,7 @@ export default function OrganizationSettings() {
           .map((item) => item.trim())
           .filter(Boolean),
       };
-
+  
       const response = await fetch("/api/organizations/me", {
         method: "PUT",
         headers: {
@@ -74,15 +93,26 @@ export default function OrganizationSettings() {
         },
         body: JSON.stringify(payload),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to update organization");
+  
+      // 🛡️ Safely attempt JSON parsing
+      let data = null;
+      try {
+        data = await response.json();
+      } catch {
+        data = null; // Empty or invalid JSON
       }
-
+  
+      if (!response.ok) {
+        const message = data?.error || "Failed to update organization";
+        throw new Error(message);
+      }
+  
+      // 🛠️ Update local state only if backend sent data
+      if (data?.organization) {
+        setOrganization(data.organization);
+      }
+  
       setSuccess("Organization updated successfully!");
-      setOrganization(data.organization);
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       setError(err.message);

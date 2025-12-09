@@ -158,11 +158,15 @@ const MilestoneTracker = ({ projectId }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'No due date';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
+  
+    // Ensure we only use the date part and force local midnight
+    const datePart = dateString.slice(0, 10); // "YYYY-MM-DD"
+    const date = new Date(`${datePart}T00:00:00`);
+  
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     });
   };
 
