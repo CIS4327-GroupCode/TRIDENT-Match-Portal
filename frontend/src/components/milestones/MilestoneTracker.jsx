@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../auth/AuthContext';
+import { getApiUrl } from '../../config/api';
 import MilestoneForm from './MilestoneForm';
 
 const MilestoneTracker = ({ projectId }) => {
@@ -20,7 +21,7 @@ const MilestoneTracker = ({ projectId }) => {
   const fetchMilestones = async () => {
     try {
       setLoading(true);
-      let url = `http://localhost:4000/api/projects/${projectId}/milestones`;
+      let url = getApiUrl(`/api/projects/${projectId}/milestones`);
       
       if (filter !== 'all') {
         if (filter === 'overdue') {
@@ -50,7 +51,7 @@ const MilestoneTracker = ({ projectId }) => {
   const fetchStats = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/projects/${projectId}/milestones/stats`,
+        getApiUrl(`/api/projects/${projectId}/milestones/stats`),
         {
           headers: { 'Authorization': `Bearer ${token}` }
         }
@@ -70,7 +71,7 @@ const MilestoneTracker = ({ projectId }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:4000/api/projects/${projectId}/milestones/${milestoneId}`,
+        getApiUrl(`/api/projects/${projectId}/milestones/${milestoneId}`),
         {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
@@ -90,7 +91,7 @@ const MilestoneTracker = ({ projectId }) => {
   const updateStatus = async (milestoneId, newStatus) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/projects/${projectId}/milestones/${milestoneId}`,
+        getApiUrl(`/api/projects/${projectId}/milestones/${milestoneId}`),
         {
           method: 'PUT',
           headers: {

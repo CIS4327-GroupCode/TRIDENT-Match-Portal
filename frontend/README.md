@@ -1,8 +1,8 @@
 # TRIDENT Match Portal - Frontend
 
-**Last Updated**: December 2, 2025  
-**Status**: 53.8% Implementation Complete  
-**Tech Stack**: React 18.2.0, Vite 7.1.7, React Router 7.9.4, Bootstrap 5.3.2
+**Last Updated**: December 10, 2025  
+**Version**: 0.2.0  
+**Tech Stack**: React 18.2, Vite 7.1, React Router 7.9, Bootstrap 5.3
 
 ---
 
@@ -11,9 +11,9 @@
 ### Prerequisites
 - Node.js 18+
 - npm or yarn
-- Backend server running on port 4000
+- Backend server running on port 5000
 
-### Steps to Run Locally
+### Installation
 
 1. **Install dependencies:**
 ```bash
@@ -21,13 +21,152 @@ cd frontend
 npm install
 ```
 
-2. **Start development server:**
+2. **Set up environment variables:**
+```bash
+# Create .env file
+echo "VITE_API_URL=http://localhost:5000" > .env
+```
+
+3. **Start development server:**
 ```bash
 npm run dev
 ```
 
-3. **Access application:**
+4. **Access application:**
 - Frontend: `http://localhost:3000`
+- Make sure backend is running on `http://localhost:5000`
+
+---
+
+## 📁 Project Structure
+
+```
+frontend/
+├── src/
+│   ├── auth/
+│   │   └── AuthContext.jsx       # Global auth state management
+│   ├── components/
+│   │   ├── ui/
+│   │   │   ├── LoginForm.jsx     # Login modal form
+│   │   │   ├── SignUpForm.jsx    # Signup modal form
+│   │   │   └── Modal.jsx         # Reusable modal wrapper
+│   │   ├── TopBar.jsx            # Responsive navigation bar
+│   │   ├── Footer.jsx            # Site footer
+│   │   ├── ProtectedRoute.jsx    # Route authentication wrapper
+│   │   └── FloatingChatBox.jsx   # Homepage chat widget
+│   ├── pages/
+│   │   ├── Home.jsx              # Landing page
+│   │   ├── Dashboard.jsx         # Role-based dashboard router
+│   │   ├── AdminDashboard.jsx    # Admin control panel
+│   │   ├── Browse.jsx            # Project browsing
+│   │   ├── Settings.jsx          # User settings
+│   │   ├── Messages.jsx          # Messaging interface
+│   │   ├── MessagesPage.jsx      # Full messages page
+│   │   ├── OrgForm.jsx           # Organization form
+│   │   └── NonprofitSignup.jsx   # Nonprofit signup flow
+│   ├── App.jsx                   # Main app with routing
+│   ├── main.jsx                  # React entry point
+│   └── styles.css                # Global styles
+├── index.html
+├── vite.config.js
+├── package.json
+└── README.md
+```
+
+---
+
+## 🎨 Key Components
+
+### Authentication System
+
+**AuthContext** (`src/auth/AuthContext.jsx`)
+- Global authentication state management
+- Provides user data and JWT token
+- Handles login, logout, and session persistence
+- Role-based navigation helpers
+
+```jsx
+const { user, token, isAuthenticated, login, logout, loginAndRedirect } = useAuth()
+```
+
+**LoginForm** (`src/components/ui/LoginForm.jsx`)
+- Modal-based login interface
+- Email and password validation
+- Error handling and loading states
+- Auto-redirect on success
+
+**SignUpForm** (`src/components/ui/SignUpForm.jsx`)
+- Multi-step signup process
+- Role selection (nonprofit/researcher)
+- Profile creation on registration
+- Form validation
+
+### Navigation
+
+**TopBar** (`src/components/TopBar.jsx`)
+- Fully responsive navigation
+- Mobile hamburger menu
+- Conditional rendering based on auth state
+- Role-specific dashboard links
+
+Features:
+- Desktop: Horizontal navigation with dropdowns
+- Tablet: Progressive collapse
+- Mobile: Hamburger menu with vertical links
+
+### Dashboards
+
+**Dashboard** (`src/pages/Dashboard.jsx`)
+- Role-based routing component
+- Switches between nonprofit, researcher, admin views
+- Fallback to localStorage if context unavailable
+
+**Nonprofit Dashboard**
+- Organization profile overview
+- Posted projects management
+- Researcher matches
+- Application tracking
+
+**Researcher Dashboard**
+- Personal profile
+- Project matches
+- Available opportunities
+- Preferences and criteria settings
+
+**Admin Dashboard** (`src/pages/AdminDashboard.jsx`)
+- Platform statistics
+- User management
+- Organization oversight
+- Project moderation
+- System analytics
+
+### Pages
+
+**Home** (`src/pages/Home.jsx`)
+- Landing page with hero section
+- Feature highlights
+- Call-to-action buttons
+- Floating chat widget for authenticated users
+
+**Browse** (`src/pages/Browse.jsx`)
+- Project listing with filters
+- Search functionality
+- Pagination support
+- Quick view and details
+
+**Settings** (`src/pages/Settings.jsx`)
+- Profile editing
+- Password change
+- Notification preferences
+- Account management
+
+**Messages** (`src/pages/Messages.jsx`)
+- Conversation list
+- Real-time messaging interface
+- Message history
+- Notification indicators
+
+---
 - Vite auto-proxies `/api` requests to `http://localhost:4000`
 
 ---
@@ -58,57 +197,234 @@ frontend/src/
 │   ├── nonprofitDash/
 │   │   ├── NonprofitDashboard.jsx
 │   │   ├── ProfileSection.jsx
-│   │   ├── ProjectsCreated.jsx
-│   │   └── Milestones.jsx
-│   ├── researcherDash/
-│   │   ├── ResearcherDash.jsx
-│   │   ├── ProfileSection.jsx
-│   │   ├── ProjectsInvolved.jsx  # Real project data integration
-│   │   └── Availability.jsx
-│   └── settings/
-│       └── AccountSettings.jsx
-└── pages/
-    ├── Login.jsx            # Authentication page
-    ├── Register.jsx         # Registration with role selection
-    ├── AdminDashboard.jsx   # Admin control panel
-    └── NotFound.jsx         # 404 page
+---
+
+## 🎨 Styling & UI
+
+### Bootstrap 5 Integration
+- Responsive grid system
+- Pre-built components (cards, modals, buttons)
+- Utility classes for spacing, colors, typography
+- Mobile-first design approach
+
+### Custom Styles
+- Global styles in `styles.css`
+- Component-specific styling
+- Consistent color scheme
+- Accessible design patterns
+
+### Responsive Breakpoints
+```css
+/* Mobile: < 768px */
+/* Tablet: 768px - 991px */
+/* Desktop: ≥ 992px */
 ```
 
-## ✅ Implementation Status
+---
 
-### Completed Features (53.8%)
+## 🛠️ Available Scripts
 
-#### Authentication System ✅
-- Login page with JWT token handling
-- Registration with role selection (nonprofit/researcher/admin)
-- Profile auto-creation on signup
-- AuthContext for global authentication state
-- Protected routes with role-based access
-- Automatic token refresh
-- Session persistence with localStorage
+```bash
+npm run dev          # Start Vite dev server (http://localhost:3000)
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint (if configured)
+```
 
-#### Public Pages ✅
-- **Landing Page** with hero, features, metrics, and trust indicators
-- **Browse Projects** - Public project discovery with:
-  - Search functionality
-  - Tag filtering
-  - Category filters
-  - Responsive project cards
-  - Pagination support
+---
 
-#### Nonprofit Dashboard ✅
-- Profile management with edit capabilities
-- Project creation and management
-- Milestone tracking and analytics
-- Organization details editing
-- Project visibility controls
+## 🔌 API Integration
 
-#### Researcher Dashboard ✅
-- Profile customization
-- Academic history management (CRUD)
-- Certification tracking (CRUD)
-- Projects involved section with **real data integration**:
-  - Current collaborations display
+### API Base URL
+Configured via environment variable:
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+### Making API Calls
+
+```javascript
+// Example: Authenticated request
+const { token } = useAuth()
+
+const response = await fetch(`${import.meta.env.VITE_API_URL}/api/endpoint`, {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(data)
+})
+
+const result = await response.json()
+```
+
+### Error Handling Pattern
+
+```javascript
+try {
+  const res = await fetch('/api/endpoint')
+  const data = await res.json()
+  
+  if (res.ok) {
+    // Handle success
+  } else {
+    // Handle API error
+    setError(data.error || 'Request failed')
+  }
+} catch (err) {
+  // Handle network error
+  setError('Network error. Please try again.')
+}
+```
+
+---
+
+## 🚦 Routing
+
+### Route Structure
+
+| Path | Component | Protection | Description |
+|------|-----------|------------|-------------|
+| `/` | Home | Public | Landing page |
+| `/browse` | Browse | Public | Browse projects |
+| `/dashboard/:role` | Dashboard | Protected | Role-based dashboard |
+| `/admin` | AdminDashboard | Admin only | Admin panel |
+| `/settings` | Settings | Protected | User settings |
+| `/messages` | Messages | Protected | Messaging system |
+
+### Protected Routes
+
+```jsx
+<Route 
+  path="/admin" 
+  element={
+    <ProtectedRoute requireAdmin={true}>
+      <AdminDashboard />
+    </ProtectedRoute>
+  } 
+/>
+```
+
+### Role-Based Navigation
+
+```jsx
+// After login, redirect based on role
+const role = user?.role || 'researcher'
+navigate(`/dashboard/${role}`, { replace: true })
+```
+
+---
+
+## 🔐 Authentication Flow
+
+### Login Process
+1. User submits credentials via `LoginForm`
+2. API validates and returns `{ user, token }`
+3. `AuthContext` stores in state and localStorage
+4. `loginAndRedirect()` navigates to role-based dashboard
+5. Token included in subsequent API requests
+
+### Session Persistence
+```javascript
+// On app load, restore session from localStorage
+useEffect(() => {
+  const rawUser = localStorage.getItem('trident_user')
+  const rawToken = localStorage.getItem('trident_token')
+  if (rawUser && rawToken) {
+    setUser(JSON.parse(rawUser))
+    setToken(rawToken)
+  }
+}, [])
+```
+
+### Logout Process
+```javascript
+function logout() {
+  setUser(null)
+  setToken(null)
+  localStorage.removeItem('trident_user')
+  localStorage.removeItem('trident_token')
+  navigate('/', { replace: true })
+  window.location.reload()
+}
+```
+
+---
+
+## 🎯 Key Features
+
+### Implemented ✅
+- Responsive design (mobile, tablet, desktop)
+- Role-based authentication
+- Dynamic dashboard rendering
+- Real-time form validation
+- Error handling and user feedback
+- Loading states for async operations
+- Modal-based forms
+- Pagination support
+- Search and filter functionality
+
+### In Progress 🚧
+- File upload for profile pictures
+- Real-time messaging
+- Notification system
+- Advanced project filters
+- Calendar integration
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Error: `Cannot find module 'react-router-dom'`**
+```bash
+npm install react-router-dom
+```
+
+**Error: `CORS policy blocked`**
+- Ensure backend CORS is configured for `http://localhost:3000`
+- Check backend `CORS_ORIGIN` environment variable
+
+**Error: `Network request failed`**
+- Verify backend is running on correct port (5000)
+- Check `VITE_API_URL` in `.env`
+- Inspect browser console for details
+
+**Blank page after build**
+```bash
+# Clear cache and rebuild
+rm -rf node_modules dist
+npm install
+npm run build
+```
+
+---
+
+## 📚 Additional Documentation
+
+- [Component Library](../docs/guides/frontend.md) - Component patterns
+- [API Integration](../docs/api/) - Backend endpoints
+- [State Management](../docs/architecture/state-management.md) - Context usage
+- [Styling Guide](../docs/guides/styling.md) - CSS conventions
+
+---
+
+## 🤝 Contributing
+
+When adding new components:
+1. Follow existing file structure
+2. Use functional components with hooks
+3. Include PropTypes or TypeScript types
+4. Add error boundaries for critical components
+5. Ensure mobile responsiveness
+6. Test across browsers
+
+---
+
+**Last Updated:** December 10, 2025  
+**Maintainer:** TRIDENT Development Team
   - Completed projects archive
   - Organization details with tags
   - Budget and agreement information

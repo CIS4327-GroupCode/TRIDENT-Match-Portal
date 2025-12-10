@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { getApiUrl } from "../config/api";
 import "./messages.css";
 
 
@@ -33,7 +34,7 @@ export default function Messages() {
 
   // Load messages ONLY for the active thread
   useEffect(() => {
-  fetch(`http://localhost:4000/api/messages/thread/${threadId}`)
+  fetch(getApiUrl(`/api/messages/thread/${threadId}`))
     .then(res => res.json())
     .then(data => {
       console.log("THREAD LOADED:", data);   // ADD THIS
@@ -59,7 +60,7 @@ export default function Messages() {
     };
 
     try {
-      await fetch("http://localhost:4000/api/messages/send", {
+      await fetch(getApiUrl("/api/messages/send"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

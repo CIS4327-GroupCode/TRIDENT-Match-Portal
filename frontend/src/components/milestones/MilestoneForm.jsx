@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getApiUrl } from '../../config/api';
 
 const MilestoneForm = ({ projectId, milestone, onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -29,8 +30,8 @@ const MilestoneForm = ({ projectId, milestone, onSuccess, onCancel }) => {
     try {
       const token = localStorage.getItem("trident_token");
       const url = milestone
-        ? `http://localhost:4000/api/projects/${projectId}/milestones/${milestone.id}`
-        : `http://localhost:4000/api/projects/${projectId}/milestones`;
+        ? getApiUrl(`/api/projects/${projectId}/milestones/${milestone.id}`)
+        : getApiUrl(`/api/projects/${projectId}/milestones`);
 
       const method = milestone ? 'PUT' : 'POST';
 

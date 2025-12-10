@@ -1,149 +1,418 @@
 # TRIDENT Match Portal
 
-**A platform connecting nonprofit organizations with expert researchers for impactful data-driven projects.**
+**A platform connecting nonprofit organizations with researchers for collaborative, data-driven projects.**
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-18%2B-green.svg)](https://nodejs.org)
+[![PostgreSQL](https://img.shields.io/badge/postgresql-15%2B-blue.svg)](https://www.postgresql.org)
+
+---
+
+## 📋 Table of Contents
+
+- [Overview](#overview)
+- [Current Status](#current-status)
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Documentation](#documentation)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## 🎯 Overview
+
+TRIDENT Match Portal is a web application that bridges the gap between nonprofit organizations seeking data-driven insights and researchers looking for meaningful collaboration opportunities. The platform features:
+
+- **Role-based authentication** (Nonprofit, Researcher, Admin)
+- **Smart matching algorithms** connecting organizations with researchers
+- **Project management** for tracking collaborations
+- **Real-time messaging** between matched parties
+- **Admin dashboard** for platform oversight
+
+---
+
+## 📊 Current Status
+
+**Last Updated:** December 10, 2025  
+**Version:** 0.2.0  
+**Stage:** Active Development
+
+### ✅ Completed Features
+
+- **Authentication & Authorization**
+  - User registration with role selection (nonprofit/researcher)
+  - JWT-based authentication
+  - Role-based access control
+  - Session persistence with localStorage
+  - Protected routes
+
+- **User Interface**
+  - Responsive navigation bar with hamburger menu
+  - Role-specific dashboards (Nonprofit, Researcher, Admin)
+  - Settings page for profile management
+  - Browse projects page
+  - Real-time messaging interface
+
+- **Backend Infrastructure**
+  - RESTful API with Express.js
+  - PostgreSQL database with Sequelize ORM
+  - Cloud database support (Neon PostgreSQL)
+  - Database migrations system
+  - Admin controller for platform management
+
+### 🚧 In Progress
+
+- Nonprofit dashboard content
+- Matching algorithm refinement
+- Project creation workflow
+- File upload functionality
+
+### 📝 Planned Features
+
+- Advanced matching with weighted criteria
+- Email notifications
+- Calendar integration
+- Analytics dashboard
+- User verification system
+- Mobile app
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Framework:** React 18.2
+- **Build Tool:** Vite 7.1
+- **Routing:** React Router DOM 7.9
+- **Styling:** Bootstrap 5.3
+- **State Management:** React Context API
+
+### Backend
+- **Runtime:** Node.js 18+
+- **Framework:** Express 4.18
+- **Database:** PostgreSQL 15+ (Neon cloud)
+- **ORM:** Sequelize 6.37
+- **Authentication:** JWT + bcrypt
+- **Session:** express-session
+
+### DevOps & Tools
+- **Version Control:** Git/GitHub
+- **Package Manager:** npm
+- **Testing:** Jest
+- **Database Migrations:** Sequelize CLI
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
-- PostgreSQL (or use Neon serverless)
+- Node.js 18 or higher
+- PostgreSQL database (local or Neon cloud)
 - Git
 
-### Local Development
+### Installation
 
-1. **Clone & Install**
+1. **Clone the repository**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/TRIDENT-Match-Portal.git
+   git clone https://github.com/CIS4327-GroupCode/TRIDENT-Match-Portal.git
    cd TRIDENT-Match-Portal
-   npm run install:all
    ```
 
-2. **Set Up Database**
-   
-   **Option A: Docker (Local)**
+2. **Install dependencies**
    ```bash
-   docker compose up -d
-   ```
-   
-   **Option B: Neon (Cloud)**
-   - Sign up at [neon.tech](https://neon.tech)
-   - Create database
-   - Copy connection string to `.env`
-
-3. **Configure Environment**
-   ```bash
+   # Install backend dependencies
    cd backend
-   cp .env.example .env
-   # Edit .env with your DATABASE_URL and JWT_SECRET
+   npm install
+   
+   # Install frontend dependencies
+   cd ../frontend
+   npm install
    ```
 
-4. **Run Migrations**
+3. **Configure environment variables**
+   
+   **Backend** (`backend/.env`):
+   ```env
+   DATABASE_URL=postgresql://user:password@host:5432/dbname
+   PORT=5000
+   JWT_SECRET=your-secret-key
+   REFRESH_TOKEN_SECRET=your-refresh-secret
+   NODE_ENV=development
+   ```
+   
+   **Frontend** (`frontend/.env`):
+   ```env
+   VITE_API_URL=http://localhost:5000
+   ```
+
+4. **Run database migrations**
    ```bash
    cd backend
    npm run db:migrate
    ```
 
-5. **Start Development Servers**
+5. **Start development servers**
+   
+   **Terminal 1 - Backend:**
    ```bash
-   # Terminal 1: Backend (port 4000)
    cd backend
    npm run dev
-
-   # Terminal 2: Frontend (port 3000)
+   # Runs on http://localhost:5000
+   ```
+   
+   **Terminal 2 - Frontend:**
+   ```bash
    cd frontend
    npm run dev
+   # Runs on http://localhost:3000
    ```
 
-6. **Access Application**
+6. **Access the application**
    - Frontend: http://localhost:3000
-   - Backend API: http://localhost:4000
+   - Backend API: http://localhost:5000
+
+---
+
+## ✨ Features
+
+### Authentication & User Management
+- Multi-role user registration (Nonprofit, Researcher, Admin)
+- Secure JWT-based authentication
+- Password hashing with bcrypt
+- Session persistence across page reloads
+- Role-based access control
+
+### Dashboards
+- **Nonprofit Dashboard:** Manage organization profile, post projects, view researcher matches
+- **Researcher Dashboard:** Browse projects, manage expertise profile, view nonprofit matches
+- **Admin Dashboard:** Platform oversight, user management, system analytics
+
+### Project Management
+- Create and publish collaboration projects
+- Browse available opportunities
+- Filter and search functionality
+- Project status tracking
+
+### Messaging System
+- Real-time communication between matched parties
+- Conversation history
+- Notification system
+
+### UI/UX
+- Fully responsive design (mobile, tablet, desktop)
+- Bootstrap-based modern interface
+- Accessible navigation with hamburger menu
+- Clean, intuitive user flows
 
 ---
 
 ## 📚 Documentation
 
-### Essential Guides
+### Setup & Configuration
+- **[Installation Guide](docs/setup/installation.md)** - Detailed setup instructions
+- **[Environment Configuration](docs/setup/environment.md)** - Environment variables reference
+- **[Database Setup](docs/setup/database.md)** - PostgreSQL and Neon configuration
 
-| Document | Description | Status |
-|----------|-------------|--------|
-| **[VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md)** | Complete Vercel deployment strategy with Hybrid SSG+CSR rendering | ✅ Ready |
-| **[VERCEL_DEPLOYMENT_CHECKLIST.md](./VERCEL_DEPLOYMENT_CHECKLIST.md)** | Step-by-step deployment checklist (5-8 hours) | ✅ Ready |
-| **[VERCEL_ARCHITECTURE.md](./VERCEL_ARCHITECTURE.md)** | Visual architecture diagrams and system flows | ✅ Ready |
-| **[IMPLEMENTATION_PROGRESS.md](./Documentation/ProjectStatus/IMPLEMENTATION_PROGRESS.md)** | Progress tracker for all 13 use cases | 🟡 53.8% Complete |
-| **[USE_CASES_IMPLEMENTATION_GUIDE.md](./USE_CASES_IMPLEMENTATION_GUIDE.md)** | Detailed implementation guide for all features | ✅ Reference |
-| **[SEQUELIZE_MIGRATION_GUIDE.md](./SEQUELIZE_MIGRATION_GUIDE.md)** | Sequelize ORM setup and migration guide | ✅ 100% Complete |
+### Architecture
+- **[System Overview](docs/architecture/overview.md)** - High-level architecture
+- **[Database Schema](docs/architecture/database-schema.md)** - ER diagrams and table specs
+- **[Authentication Flow](docs/architecture/auth-flow.md)** - Login/signup process
+- **[API Design](docs/architecture/api-design.md)** - RESTful API patterns
 
-### Feature-Specific Documentation
+### API Reference
+- **[Authentication Endpoints](docs/api/auth.md)** - Signup, login, logout
+- **[User Endpoints](docs/api/users.md)** - Profile management
+- **[Project Endpoints](docs/api/projects.md)** - CRUD operations
+- **[Admin Endpoints](docs/api/admin.md)** - Platform management
 
-| Document | Description |
-|----------|-------------|
-| **[PROFILE_CREATION_QUICK_START.md](./PROFILE_CREATION_QUICK_START.md)** | User guide for profile creation on signup |
-| **[backend/PROFILE_CREATION_EXAMPLES.md](./backend/PROFILE_CREATION_EXAMPLES.md)** | API examples for profile creation |
-| **[frontend/FRONTEND_PROFILE_CREATION.md](./frontend/FRONTEND_PROFILE_CREATION.md)** | Frontend implementation details |
+### Development Guides
+- **[Frontend Guide](docs/guides/frontend.md)** - React patterns and components
+- **[Backend Guide](docs/guides/backend.md)** - Express and Sequelize patterns
+- **[Testing Guide](docs/guides/testing.md)** - Test suite overview
+
+### Deployment
+- **[Deployment Guide](docs/setup/deployment.md)** - Production deployment steps
+- **[Neon PostgreSQL Setup](docs/setup/neon.md)** - Cloud database configuration
 
 ---
 
-## 🏗️ Architecture
+## 📁 Project Structure
 
-### Technology Stack
+```
+TRIDENT-Match-Portal/
+├── backend/                    # Express.js API server
+│   ├── src/
+│   │   ├── config/            # Database and environment config
+│   │   ├── controllers/       # Route handlers
+│   │   ├── database/
+│   │   │   ├── migrations/    # Database migrations
+│   │   │   └── models/        # Sequelize models
+│   │   ├── middleware/        # Auth and validation middleware
+│   │   ├── routes/            # API route definitions
+│   │   └── index.js           # Server entry point
+│   ├── tests/                 # Jest test suites
+│   ├── package.json
+│   └── README.md
+├── frontend/                   # React application
+│   ├── src/
+│   │   ├── auth/              # Authentication context
+│   │   ├── components/        # Reusable React components
+│   │   │   └── ui/            # UI components (forms, modals)
+│   │   ├── pages/             # Page components
+│   │   │   ├── Dashboard.jsx  # Role-based dashboard router
+│   │   │   ├── AdminDashboard.jsx
+│   │   │   ├── Home.jsx
+│   │   │   ├── Browse.jsx
+│   │   │   ├── Settings.jsx
+│   │   │   └── Messages.jsx
+│   │   ├── App.jsx            # Main app component
+│   │   └── main.jsx           # React entry point
+│   ├── package.json
+│   └── README.md
+├── docs/                       # Documentation
+│   ├── setup/                 # Installation and config guides
+│   ├── architecture/          # System design docs
+│   ├── api/                   # API reference
+│   ├── guides/                # Development guides
+│   └── archive/               # Archived/historical docs
+├── Documentation/              # Legacy docs (being reorganized)
+├── .gitignore
+├── LICENSE
+├── package.json
+└── README.md                   # This file
+```
 
-**Frontend:**
-- React 18.2.0
-- Vite 7.1.7 (Build tool)
-- React Router DOM 7.9.4
-- Bootstrap 5.3.2
-- Context API (State management)
+---
+
+## 🔧 Development
+
+### Available Scripts
 
 **Backend:**
-- Node.js + Express 4.18.2
-- Sequelize 6.37.7 (ORM)
-- PostgreSQL (Neon serverless)
-- JWT Authentication
-- bcrypt (Password hashing)
+```bash
+npm run dev          # Start development server with nodemon
+npm start            # Start production server
+npm run db:migrate   # Run pending database migrations
+npm run db:seed      # Seed database with sample data
+npm test             # Run test suite
+```
 
-**Deployment:**
-- **Recommended**: Vercel (Serverless + Edge CDN)
-- Frontend: Static Site Generation (SSG)
-- Backend: Serverless Functions
-- Database: Neon PostgreSQL
+**Frontend:**
+```bash
+npm run dev          # Start Vite dev server
+npm run build        # Build for production
+npm run preview      # Preview production build
+```
 
-**Testing:**
-- Jest 29.7.0
-- Supertest 6.3.3
-- 70+ tests implemented
+### Database Management
+
+```bash
+# Create a new migration
+npx sequelize-cli migration:generate --name description-of-change
+
+# Run migrations
+npm run db:migrate
+
+# Rollback last migration
+npm run db:migrate:undo
+
+# Reset database (caution: data loss)
+npm run db:reset
+```
 
 ---
 
-## 📊 Project Status
+## 🧪 Testing
 
-### Completed Features ✅
+```bash
+# Run all tests
+cd backend
+npm test
 
-1. **Database Architecture** (100%)
-   - 14 tables fully migrated
-   - 14 migrations executed
-   - All models implemented with associations
-   - 18 model relationships configured
+# Run specific test suite
+npm test -- tests/unit/auth.test.js
 
-2. **Authentication System** (100%)
-   - ✅ User registration with role selection
-   - ✅ User login with JWT tokens
-   - ✅ JWT token generation (7-day expiration)
-   - ✅ Password hashing (bcrypt)
-   - ✅ Role-based access (nonprofit/researcher/admin)
-   - ✅ Profile auto-creation on signup
-   - ⏳ Email verification (planned)
-   - ⏳ MFA (planned)
+# Run with coverage
+npm run test:coverage
+```
 
-3. **Account Management** (100%)
-   - ✅ Profile editing for all roles
-   - ✅ Password change functionality
-   - ✅ Account deletion (soft delete)
-   - ✅ Notification preferences
-   - ✅ Privacy settings
+---
 
-4. **Project Management** (100%)
+## 🤝 Contributing
+
+We welcome contributions! Please follow these guidelines:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Code Style
+- Follow existing code patterns
+- Use meaningful variable names
+- Comment complex logic
+- Write tests for new features
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👥 Team
+
+**TRIDENT Match Portal Development Team**
+- CIS 4327 - Software Development II
+- University of Houston-Downtown
+
+---
+
+## 📞 Support
+
+For issues, questions, or contributions:
+- **GitHub Issues:** [Create an issue](https://github.com/CIS4327-GroupCode/TRIDENT-Match-Portal/issues)
+- **Documentation:** Check the `/docs` folder
+- **Project Board:** [GitHub Projects](https://github.com/CIS4327-GroupCode/TRIDENT-Match-Portal/projects)
+
+---
+
+## 🎯 Roadmap
+
+### Phase 1 (Current - December 2025)
+- [x] Core authentication system
+- [x] Role-based dashboards
+- [ ] Complete nonprofit dashboard
+- [ ] Project creation workflow
+- [ ] Basic matching algorithm
+
+### Phase 2 (January 2026)
+- [ ] Advanced matching with AI
+- [ ] Real-time notifications
+- [ ] File upload system
+- [ ] Calendar integration
+
+### Phase 3 (February 2026)
+- [ ] Analytics dashboard
+- [ ] Email notification system
+- [ ] User verification
+- [ ] Mobile responsive optimization
+
+### Phase 4 (March 2026)
+- [ ] Production deployment
+- [ ] Performance optimization
+- [ ] Security audit
+- [ ] User onboarding improvements
+
+---
+
+**Last Updated:** December 10, 2025  
+**Version:** 0.2.0
    - ✅ Create project briefs (nonprofits)
    - ✅ Edit and update projects
    - ✅ Delete projects with cascade
