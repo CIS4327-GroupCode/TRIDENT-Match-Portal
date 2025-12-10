@@ -8,8 +8,11 @@ module.exports = {
     dialect: 'postgres',
     logging: false,
     dialectOptions: {
-      // IMPORTANT: SSL OFF for Docker/local Postgres
-      ssl: false,
+      // SSL ON for Neon cloud Postgres
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
     },
   },
 
