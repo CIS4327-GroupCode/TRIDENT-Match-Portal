@@ -3,16 +3,32 @@ import { useAuth } from '../auth/AuthContext'
 import Modal from './ui/Modal'
 import SignUpForm from './ui/SignUpForm'
 import LoginForm from './ui/LoginForm'
+<<<<<<< HEAD
+import { Link } from 'react-router-dom'
+=======
 // Import Link from react-router-dom to handle navigation to the profile/dashboard
 import { Link } from 'react-router-dom' 
+>>>>>>> 6e3653cb39648374608b1606424a8f3da54c1979
 
 function UtilityNav(){
+        const { isAuthenticated } = useAuth();
   return (
     <nav className="d-none d-md-flex gap-3">
       <Link to="/" className="nav-link">Home</Link>
       <Link to="/browse" className="nav-link">Browse Projects</Link>
       <a href="#about" className="nav-link">About</a>
       <a href="#how" className="nav-link">How it Works</a>
+<<<<<<< HEAD
+      <a href="#pricing" className="nav-link">Pricing</a>
+      <a href="#faq" className="nav-link">FAQ</a>
+      <a href="#contact" className="nav-link">Contact</a>
+<Link to="/MessagesPage" className="nav-link">Messages</Link>
+=======
+
+      {isAuthenticated && (
+      <Link to="/messages" className="nav-link">Messages</Link>
+)}
+>>>>>>> 6e3653cb39648374608b1606424a8f3da54c1979
     </nav>
   )
 }
@@ -40,6 +56,17 @@ export default function TopBar() {
         {/* RIGHT SIDE: Modified for Profile, Logout, and User Name */}
         <div className="d-flex align-items-center gap-2">
           {auth && auth.isAuthenticated ? (
+<<<<<<< HEAD
+            <>
+              <span className="me-2 text-muted">Hi, {auth.user?.name || auth.user?.email}</span>
+
+              <button className="btn btn-outline-secondary btn-sm" onClick={() => auth.logout()}>Logout</button>
+            </>
+          ) : (
+            <button type="button" className="btn btn-link text-muted me-2" onClick={() => { setMode('login'); setOpen(true) }}>
+              Sign In
+            </button>
+=======
             // === LOGGED IN STATE ===
             <div className="d-flex align-items-center gap-3">
               
@@ -91,6 +118,7 @@ export default function TopBar() {
                 </ul>
               </div>
             </>
+>>>>>>> 6e3653cb39648374608b1606424a8f3da54c1979
           )}
         </div>
       </div>
