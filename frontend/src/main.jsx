@@ -18,11 +18,14 @@ function Root() {
     </>
   );
 }
+import { BrowserRouter } from 'react-router-dom'
 
 createRoot(document.getElementById("root")).render(
-  <AuthProvider>
-    <BrowserRouter>
+	<BrowserRouter>
+	  <AuthProvider>
+	    <BrowserRouter>
       <Root />
     </BrowserRouter>
-  </AuthProvider>
+	  </AuthProvider>
+	</BrowserRouter>
 );

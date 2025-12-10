@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
-import { useAuth } from '../../auth/AuthContext'
+import React, { useState, useContext } from 'react'
+import { AuthContext } from '../../auth/AuthContext'
 
 export default function LoginForm({ onSuccess = () => {}, onClose = () => {} }){
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const auth = useAuth()
+  const { loginAndRedirect } = useContext(AuthContext)
 
   async function submit(e){
     e.preventDefault()
@@ -22,24 +22,16 @@ export default function LoginForm({ onSuccess = () => {}, onClose = () => {} }){
         body: JSON.stringify({ email: email.trim().toLowerCase(), password })
       })
 
-      if(!res.ok){
-        const data = await res.json().catch(()=>null)
+      const data = await res.json()
+      if(res.ok){
+        // assume backend returns { user, token }
+        loginAndRedirect({user:data.user, token:data.token})
+        onSuccess(data)
+        onClose()
+      }else{
         setError((data && data.error) || `Login failed (${res.status})`)
-        setLoading(false)
-        return
       }
-
-      const data = await res.json().catch(()=>null)
-      // data.user, data.token expected
-      if(data && data.token && data.user){
-        auth.login(data)
-      }
-      onSuccess(data)
       setLoading(false)
-      // close modal if present
-      onClose()
-      // navigate to dashboard or home
-      window.location.href = '/'
     }catch(err){
       console.error(err)
       setError('Network error during login')
