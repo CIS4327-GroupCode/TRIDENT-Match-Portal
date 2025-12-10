@@ -27,7 +27,7 @@ const MilestoneForm = ({ projectId, milestone, onSuccess, onCancel }) => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("trident_token");
       const url = milestone
         ? `http://localhost:4000/api/projects/${projectId}/milestones/${milestone.id}`
         : `http://localhost:4000/api/projects/${projectId}/milestones`;

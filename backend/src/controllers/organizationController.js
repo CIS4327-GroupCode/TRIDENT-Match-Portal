@@ -1,4 +1,4 @@
-const { Organization } = require('../database/models');
+const { Organization, User } = require('../database/models');
 
 /**
  * Get current user's organization
@@ -6,37 +6,35 @@ const { Organization } = require('../database/models');
  */
 const getOrganization = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const org = await Organization.findOne({
+      where: { user_id: req.user.id },
+    });
 
-    // Verify user is nonprofit
-    if (req.user.role !== 'nonprofit') {
-      return res.status(403).json({ error: 'Only nonprofit users can access organization settings' });
+    // If no organization exists yet, return empty object
+    if (!org) {
+      return res.json({});
     }
 
-    const organization = await Organization.findOne({ where: { user_id: userId } });
-
-    if (!organization) {
-      return res.status(404).json({ error: 'Organization not found' });
-    }
-
-    return res.status(200).json({ organization });
-  } catch (error) {
-    console.error('Get organization error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.json(org);
+  } catch (err) {
+    console.error('Get organization error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
 /**
- * Update current user's organization
+ * Create or update current user's organization
  * PUT /organizations/me
  */
 const updateOrganization = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Verify user is nonprofit
+    // Only nonprofits should have org profiles
     if (req.user.role !== 'nonprofit') {
-      return res.status(403).json({ error: 'Only nonprofit users can update organization settings' });
+      return res
+        .status(403)
+        .json({ error: 'Only nonprofit users can update organization settings' });
     }
 
     const allowedFields = [
@@ -45,12 +43,12 @@ const updateOrganization = async (req, res) => {
       'mission',
       'focus_tags',
       'compliance_flags',
-      'contacts'
+      'contacts',
     ];
 
-    // Filter only allowed fields from request body
+    // Keep only allowed fields from body
     const updates = {};
-    Object.keys(req.body).forEach(key => {
+    Object.keys(req.body).forEach((key) => {
       if (allowedFields.includes(key) && req.body[key] !== undefined) {
         updates[key] = req.body[key];
       }
@@ -60,18 +58,29 @@ const updateOrganization = async (req, res) => {
       return res.status(400).json({ error: 'No valid update fields provided' });
     }
 
-    const organization = await Organization.findOne({ where: { user_id: userId } });
+    // Try to find existing org for this user
+    let organization = await Organization.findOne({ where: { user_id: userId } });
 
     if (!organization) {
-      return res.status(404).json({ error: 'Organization not found' });
+      // No org yet → create one
+      organization = await Organization.create({
+        ...updates,
+        user_id: userId,
+      });
+
+      // Link user to this org
+      await User.update(
+        { org_id: organization.id },
+        { where: { id: userId } }
+      );
+    } else {
+      // Org exists → just update
+      await organization.update(updates);
     }
 
-    // Update organization
-    await organization.update(updates);
-
-    return res.status(200).json({ 
-      message: 'Organization updated successfully',
-      organization 
+    return res.status(200).json({
+      message: 'Organization saved successfully',
+      organization,
     });
   } catch (error) {
     console.error('Update organization error:', error);
@@ -81,5 +90,5 @@ const updateOrganization = async (req, res) => {
 
 module.exports = {
   getOrganization,
-  updateOrganization
+  updateOrganization,
 };

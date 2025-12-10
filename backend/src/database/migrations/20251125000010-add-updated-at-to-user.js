@@ -2,15 +2,12 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Add updated_at column to _user table
-    await queryInterface.addColumn('_user', 'updated_at', {
-      type: Sequelize.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
-    });
+    // Column already exists locally; skip adding it again
+    return Promise.resolve();
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeColumn('_user', 'updated_at');
-  }
+    // No-op for local dev
+    return Promise.resolve();
+  },
 };

@@ -1,43 +1,28 @@
 require('dotenv').config();
 
+const { DATABASE_URL, NODE_ENV } = process.env;
+
 module.exports = {
   development: {
-    url: process.env.DATABASE_URL,
-    dialect: 'postgres',
-    logging: console.log,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    },
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    }
-  },
-  test: {
-    url: process.env.TEST_DATABASE_URL || process.env.DATABASE_URL,
-    dialect: 'postgres',
-    logging: false
-  },
-  production: {
-    url: process.env.DATABASE_URL,
+    url: DATABASE_URL,
     dialect: 'postgres',
     logging: false,
-    pool: {
-      max: 10,
-      min: 2,
-      acquire: 30000,
-      idle: 10000
-    },
     dialectOptions: {
+      // IMPORTANT: SSL OFF for Docker/local Postgres
+      ssl: false,
+    },
+  },
+
+  production: {
+    url: DATABASE_URL,
+    dialect: 'postgres',
+    logging: false,
+    dialectOptions: {
+      // SSL ON for Neon / cloud Postgres
       ssl: {
         require: true,
-        rejectUnauthorized: false
-      }
-    }
-  }
+        rejectUnauthorized: false,
+      },
+    },
+  },
 };

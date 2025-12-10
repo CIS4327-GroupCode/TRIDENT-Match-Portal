@@ -131,23 +131,28 @@ const createProject = async (req, res) => {
     const userId = req.user.id;
 
     // Verify user is nonprofit
-    if (req.user.role !== 'nonprofit') {
-      return res.status(403).json({ error: 'Only nonprofit users can create projects' });
+    const user = await User.findByPk(userId);
+    if (!user || user.role !== 'nonprofit') {
+      return res
+        .status(403)
+        .json({ error: 'Only nonprofit users can create projects' });
     }
 
-    // Get user with organization
-    const user = await User.findByPk(userId, {
-      include: [{
-        model: Organization,
-        as: 'organization'
-      }]
-    });
-    
-    if (!user || !user.organization) {
-      return res.status(404).json({ error: 'Organization not found. Please complete your organization profile first.' });
+    // Make sure user is linked to an organization
+    if (!user.org_id) {
+      return res.status(404).json({
+        error:
+          'Organization not found. Please complete your organization profile first.',
+      });
     }
 
-    const organization = user.organization;
+    // Make sure that organization actually exists
+    const organization = await Organization.findByPk(user.org_id);
+    if (!organization) {
+      return res
+        .status(404)
+        .json({ error: 'Organization not found for this user.' });
+    }
 
     const {
       title,
@@ -157,27 +162,31 @@ const createProject = async (req, res) => {
       timeline,
       budget_min,
       data_sensitivity,
-      status
+      status,
     } = req.body;
 
     // Validate required fields
     if (!title || title.trim() === '') {
-      return res.status(400).json({ error: 'Project title is required' });
+      return res
+        .status(400)
+        .json({ error: 'Project title is required' });
     }
 
     // Validate budget if provided
     if (budget_min !== undefined && budget_min !== null) {
       const budgetNum = parseFloat(budget_min);
       if (isNaN(budgetNum) || budgetNum < 0) {
-        return res.status(400).json({ error: 'Budget must be a non-negative number' });
+        return res
+          .status(400)
+          .json({ error: 'Budget must be a non-negative number' });
       }
     }
 
     // Validate status if provided
     const validStatuses = ['draft', 'open', 'in_progress', 'completed', 'cancelled'];
     if (status && !validStatuses.includes(status)) {
-      return res.status(400).json({ 
-        error: `Status must be one of: ${validStatuses.join(', ')}` 
+      return res.status(400).json({
+        error: `Status must be one of: ${validStatuses.join(', ')}`,
       });
     }
 
@@ -191,21 +200,20 @@ const createProject = async (req, res) => {
       budget_min: budget_min || null,
       data_sensitivity: data_sensitivity ? data_sensitivity.trim() : null,
       status: status || 'draft',
-      org_id: organization.id
+      org_id: organization.id, // <- key line
     });
 
-    return res.status(201).json({ 
+    return res.status(201).json({
       message: 'Project created successfully',
-      project
+      project,
     });
   } catch (error) {
     console.error('Create project error:', error);
-    
-    // Handle validation errors
+
     if (error.name === 'SequelizeValidationError') {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Validation error',
-        details: error.errors.map(e => e.message)
+        details: error.errors.map((e) => e.message),
       });
     }
 
@@ -217,38 +225,41 @@ const createProject = async (req, res) => {
  * Get all projects for current user's organization
  * GET /projects
  */
+/**
+ * Get all projects for current user's organization
+ * GET /projects
+ */
 const getProjects = async (req, res) => {
   try {
     const userId = req.user.id;
 
     // Verify user is nonprofit
     if (req.user.role !== 'nonprofit') {
-      return res.status(403).json({ error: 'Only nonprofit users can access projects' });
+      return res
+        .status(403)
+        .json({ error: 'Only nonprofit users can access projects' });
     }
 
-    // Get user with organization
-    const user = await User.findByPk(userId, {
-      include: [{
-        model: Organization,
-        as: 'organization'
-      }]
-    });
-    
-    if (!user || !user.organization) {
-      return res.status(404).json({ error: 'Organization not found for this user' });
+    // Load fresh user from DB
+    const user = await User.findByPk(userId);
+
+    if (!user || !user.org_id) {
+      return res
+        .status(404)
+        .json({ error: 'Organization not found for this user' });
     }
 
     // Optional filtering by status
     const { status } = req.query;
-    const whereClause = { org_id: user.organization.id };
-    
+    const whereClause = { org_id: user.org_id };
+
     if (status) {
       whereClause.status = status;
     }
 
-    const projects = await Project.findAll({ 
+    const projects = await Project.findAll({
       where: whereClause,
-      order: [['project_id', 'DESC']] // Most recent first
+      order: [['project_id', 'DESC']], // Most recent first
     });
 
     return res.status(200).json({ projects });
@@ -262,6 +273,10 @@ const getProjects = async (req, res) => {
  * Get a single project by ID
  * GET /projects/:id
  */
+/**
+ * Get a single project by ID
+ * GET /projects/:id
+ */
 const getProject = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -269,26 +284,23 @@ const getProject = async (req, res) => {
 
     // Verify user is nonprofit
     if (req.user.role !== 'nonprofit') {
-      return res.status(403).json({ error: 'Only nonprofit users can access projects' });
+      return res
+        .status(403)
+        .json({ error: 'Only nonprofit users can access projects' });
     }
 
-    // Get user with organization
-    const user = await User.findByPk(userId, {
-      include: [{
-        model: Organization,
-        as: 'organization'
-      }]
-    });
-    
-    if (!user || !user.organization) {
+    // Load fresh user from DB
+    const user = await User.findByPk(userId);
+
+    if (!user || !user.org_id) {
       return res.status(404).json({ error: 'Organization not found' });
     }
 
     const project = await Project.findOne({
       where: {
         project_id: projectId,
-        org_id: user.organization.id
-      }
+        org_id: user.org_id,
+      },
     });
 
     if (!project) {
@@ -306,6 +318,10 @@ const getProject = async (req, res) => {
  * Update a project
  * PUT /projects/:id
  */
+/**
+ * Update a project
+ * PUT /projects/:id
+ */
 const updateProject = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -313,26 +329,23 @@ const updateProject = async (req, res) => {
 
     // Verify user is nonprofit
     if (req.user.role !== 'nonprofit') {
-      return res.status(403).json({ error: 'Only nonprofit users can update projects' });
+      return res
+        .status(403)
+        .json({ error: 'Only nonprofit users can update projects' });
     }
 
-    // Get user with organization
-    const user = await User.findByPk(userId, {
-      include: [{
-        model: Organization,
-        as: 'organization'
-      }]
-    });
-    
-    if (!user || !user.organization) {
+    // Load fresh user from DB
+    const user = await User.findByPk(userId);
+
+    if (!user || !user.org_id) {
       return res.status(404).json({ error: 'Organization not found' });
     }
 
     const project = await Project.findOne({
       where: {
         project_id: projectId,
-        org_id: user.organization.id
-      }
+        org_id: user.org_id,
+      },
     });
 
     if (!project) {
@@ -347,59 +360,68 @@ const updateProject = async (req, res) => {
       'timeline',
       'budget_min',
       'data_sensitivity',
-      'status'
+      'status',
     ];
 
-    // Filter only allowed fields from request body
     const updates = {};
-    Object.keys(req.body).forEach(key => {
+    Object.keys(req.body).forEach((key) => {
       if (allowedFields.includes(key) && req.body[key] !== undefined) {
         updates[key] = req.body[key];
       }
     });
 
     if (Object.keys(updates).length === 0) {
-      return res.status(400).json({ error: 'No valid update fields provided' });
+      return res
+        .status(400)
+        .json({ error: 'No valid update fields provided' });
     }
 
     // Validate title if being updated
     if (updates.title && updates.title.trim() === '') {
-      return res.status(400).json({ error: 'Project title cannot be empty' });
+      return res
+        .status(400)
+        .json({ error: 'Project title cannot be empty' });
     }
 
     // Validate budget if being updated
     if (updates.budget_min !== undefined && updates.budget_min !== null) {
       const budgetNum = parseFloat(updates.budget_min);
       if (isNaN(budgetNum) || budgetNum < 0) {
-        return res.status(400).json({ error: 'Budget must be a non-negative number' });
+        return res
+          .status(400)
+          .json({ error: 'Budget must be a non-negative number' });
       }
     }
 
     // Validate status if being updated
     if (updates.status) {
-      const validStatuses = ['draft', 'open', 'in_progress', 'completed', 'cancelled'];
+      const validStatuses = [
+        'draft',
+        'open',
+        'in_progress',
+        'completed',
+        'cancelled',
+      ];
       if (!validStatuses.includes(updates.status)) {
-        return res.status(400).json({ 
-          error: `Status must be one of: ${validStatuses.join(', ')}` 
+        return res.status(400).json({
+          error: `Status must be one of: ${validStatuses.join(', ')}`,
         });
       }
     }
 
-    // Update project
     await project.update(updates);
 
-    return res.status(200).json({ 
+    return res.status(200).json({
       message: 'Project updated successfully',
-      project 
+      project,
     });
   } catch (error) {
     console.error('Update project error:', error);
-    
-    // Handle validation errors
+
     if (error.name === 'SequelizeValidationError') {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Validation error',
-        details: error.errors.map(e => e.message)
+        details: error.errors.map((e) => e.message),
       });
     }
 
@@ -411,6 +433,10 @@ const updateProject = async (req, res) => {
  * Delete a project
  * DELETE /projects/:id
  */
+/**
+ * Delete a project
+ * DELETE /projects/:id
+ */
 const deleteProject = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -418,37 +444,33 @@ const deleteProject = async (req, res) => {
 
     // Verify user is nonprofit
     if (req.user.role !== 'nonprofit') {
-      return res.status(403).json({ error: 'Only nonprofit users can delete projects' });
+      return res
+        .status(403)
+        .json({ error: 'Only nonprofit users can delete projects' });
     }
 
-    // Get user with organization
-    const user = await User.findByPk(userId, {
-      include: [{
-        model: Organization,
-        as: 'organization'
-      }]
-    });
-    
-    if (!user || !user.organization) {
+    // Load fresh user from DB
+    const user = await User.findByPk(userId);
+
+    if (!user || !user.org_id) {
       return res.status(404).json({ error: 'Organization not found' });
     }
 
     const project = await Project.findOne({
       where: {
         project_id: projectId,
-        org_id: user.organization.id
-      }
+        org_id: user.org_id,
+      },
     });
 
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    // Delete the project
     await project.destroy();
 
-    return res.status(200).json({ 
-      message: 'Project deleted successfully' 
+    return res.status(200).json({
+      message: 'Project deleted successfully',
     });
   } catch (error) {
     console.error('Delete project error:', error);
@@ -460,6 +482,10 @@ const deleteProject = async (req, res) => {
  * Submit project for review
  * POST /projects/:id/submit-for-review
  */
+/**
+ * Submit project for review
+ * POST /projects/:id/submit-for-review
+ */
 const submitForReview = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -467,26 +493,25 @@ const submitForReview = async (req, res) => {
 
     // Verify user is nonprofit
     if (req.user.role !== 'nonprofit') {
-      return res.status(403).json({ error: 'Only nonprofit users can submit projects for review' });
+      return res.status(403).json({
+        error: 'Only nonprofit users can submit projects for review',
+      });
     }
 
-    // Get user with organization
-    const user = await User.findByPk(userId, {
-      include: [{
-        model: Organization,
-        as: 'organization'
-      }]
-    });
-    
-    if (!user || !user.organization) {
-      return res.status(404).json({ error: 'Organization not found' });
+    // Load fresh user from DB
+    const user = await User.findByPk(userId);
+
+    if (!user || !user.org_id) {
+      return res
+        .status(404)
+        .json({ error: 'Organization not found' });
     }
 
     const project = await Project.findOne({
       where: {
         project_id: projectId,
-        org_id: user.organization.id
-      }
+        org_id: user.org_id,
+      },
     });
 
     if (!project) {
@@ -495,34 +520,34 @@ const submitForReview = async (req, res) => {
 
     // Validate current status
     if (!['draft', 'needs_revision'].includes(project.status)) {
-      return res.status(400).json({ 
-        error: `Cannot submit project with status "${project.status}". Only draft or needs_revision projects can be submitted for review.` 
+      return res.status(400).json({
+        error: `Cannot submit project with status "${project.status}". Only draft or needs_revision projects can be submitted for review.`,
       });
     }
 
     // Validate required fields
     if (!project.title || project.title.trim() === '') {
-      return res.status(400).json({ error: 'Project title is required before submission' });
+      return res.status(400).json({
+        error: 'Project title is required before submission',
+      });
     }
 
     const previousStatus = project.status;
 
-    // Update project status
     await project.update({ status: 'pending_review' });
 
-    // Create review record
     await ProjectReview.create({
       project_id: projectId,
-      reviewer_id: null, // No reviewer yet (submitted by nonprofit)
+      reviewer_id: null,
       action: 'submitted',
       previous_status: previousStatus,
       new_status: 'pending_review',
-      reviewed_at: new Date()
+      reviewed_at: new Date(),
     });
 
-    return res.status(200).json({ 
+    return res.status(200).json({
       message: 'Project submitted for review successfully',
-      project
+      project,
     });
   } catch (error) {
     console.error('Submit for review error:', error);
