@@ -341,16 +341,6 @@ npm run test:coverage
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
 ### Code Style
 - Follow existing code patterns
 - Use meaningful variable names
@@ -368,8 +358,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👥 Team
 
 **TRIDENT Match Portal Development Team**
-- CIS 4327 - Software Development II
-- University of Houston-Downtown
+- CSHL Corp team members
+- CIS 4327 | CIS 4328 - Senior Project I & II
+- University of North Florida
 
 ---
 
